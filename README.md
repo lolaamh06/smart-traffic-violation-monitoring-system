@@ -26,30 +26,6 @@ Modern traffic violation management in urban centers operates through three fund
 
 ---
 
-## 📸 User Interface Screenshots
-
-### 1. Unified Login Portal
-The gateway for officers to securely log in. Authenticated via Firebase Auth with route guards.
-![Unified Login Portal](screenshots/login.png)
-
-### 2. Officer Analytics Dashboard
-Features real-time charts visualizing violations by type, aggregate fine statistics, a list of top repeat offenders, and a mini heatmap.
-![Officer Analytics Dashboard](screenshots/officer_dashboard.png)
-
-### 3. Violations Registry & Enforcement Logs
-Provides structured listings with advanced filters by zone, date, and status, and lets officers manage violation logs.
-![Violations Registry](screenshots/violations_list.png)
-
-### 4. Interactive Analytics Map (Violation Heatmap)
-Displays zone-wise violation densities and overlay heatmaps. Integrates Google Maps with an automatic offline Leaflet/OSM fallback.
-![Interactive Analytics Map](screenshots/analytics_map.png)
-
-### 5. Citizen Query & Route Safety Finder
-Allows citizens to look up violations and query routes using a safety score that highlights low-risk routes in green and high-risk zones in red.
-![Citizen Query Portal](screenshots/citizen_dashboard.png)
-
----
-
 ## 🛠️ Technology Stack
 
 *   **Frontend UI:** React (Vite-powered, responsive layout)
