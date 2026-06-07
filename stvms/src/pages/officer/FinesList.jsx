@@ -99,46 +99,46 @@ export const FinesList = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display font-bold text-xl text-text-primary">Fines Management</h2>
-          <p className="text-xs text-text-secondary">{filtered.length} records · <span className="text-primary font-bold">{formatCurrency(totalUnpaid)}</span> outstanding</p>
+          <h2 className="font-display font-extrabold text-xl text-text-primary uppercase tracking-wide">Fines Management</h2>
+          <p className="text-xs text-text-muted font-bold mt-0.5">{filtered.length} records · <span className="text-primary font-extrabold">{formatCurrency(totalUnpaid)}</span> outstanding</p>
         </div>
-        <Button variant="secondary" onClick={exportCSV} className="text-xs">
-          <Download className="w-3.5 h-3.5" /> Export CSV
+        <Button variant="secondary" onClick={exportCSV} className="text-xs py-2 px-3.5 font-bold shadow-sm cursor-pointer">
+          <Download className="w-4 h-4 mr-1.5" /> Export CSV
         </Button>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
         {[
-          { label: 'Total Fines', value: fines.length, color: 'bg-accent/10 border-accent/20 text-accent' },
-          { label: 'Unpaid', value: fines.filter(f => !f.isPaid).length, color: 'bg-primary/10 border-primary/20 text-primary' },
-          { label: 'Paid', value: fines.filter(f => f.isPaid).length, color: 'bg-safe/10 border-safe/20 text-safe' },
-          { label: 'Outstanding', value: formatCurrency(totalUnpaid), color: 'bg-warn/10 border-warn/20 text-warn' },
+          { label: 'Total Fines', value: fines.length, color: 'text-accent border-accent/25 bg-accent/5 shadow-glow-accent' },
+          { label: 'Unpaid Tickets', value: fines.filter(f => !f.isPaid).length, color: 'text-primary border-primary/25 bg-primary/5 shadow-glow-primary' },
+          { label: 'Cleared Paid', value: fines.filter(f => f.isPaid).length, color: 'text-safe border-safe/25 bg-safe/5 shadow-glow-safe' },
+          { label: 'Outstanding Balance', value: formatCurrency(totalUnpaid), color: 'text-warn border-warn/25 bg-warn/5' },
         ].map(({ label, value, color }) => (
-          <div key={label} className={`bg-surface border rounded-lg p-3 ${color.split(' ')[1]}`}>
-            <p className="text-xs text-text-secondary mb-0.5">{label}</p>
-            <p className={`font-display font-bold text-lg ${color.split(' ')[2]}`}>{value}</p>
+          <div key={label} className={`glass-card rounded-2xl p-5 shadow-card hover:-translate-y-0.5 border ${color.split(' ')[1]} ${color.split(' ')[3] || ''}`}>
+            <p className="text-[10px] text-text-secondary font-extrabold uppercase tracking-wider mb-1.5">{label}</p>
+            <p className={`font-display font-extrabold text-xl ${color.split(' ')[0]}`}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 p-4 bg-surface border border-border rounded-lg">
-        <div className="relative flex-1 min-w-40">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
+      <div className="flex flex-wrap gap-4 p-5 glass-card rounded-2xl shadow-card">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
-            className="w-full bg-surface-2 border border-border rounded pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
+            className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-3 py-2.5 text-xs text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
             placeholder="Search vehicle or owner…"
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
           />
         </div>
         <select
-          className="bg-surface-2 border border-border rounded px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent"
+          className="bg-surface-2 border border-border rounded-xl px-4 py-2.5 text-xs text-text-primary font-semibold focus:outline-none focus:border-accent cursor-pointer"
           value={filterPaid}
           onChange={e => { setFilterPaid(e.target.value); setPage(1); }}
         >
@@ -147,38 +147,38 @@ export const FinesList = () => {
           <option value="unpaid">Unpaid Only</option>
         </select>
         {(search || filterPaid) && (
-          <Button variant="secondary" className="text-xs" onClick={() => { setSearch(''); setFilterPaid(''); }}>
-            <X className="w-3 h-3" /> Clear
+          <Button variant="secondary" className="text-xs py-2.5 px-4 font-bold cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/20" onClick={() => { setSearch(''); setFilterPaid(''); }}>
+            <X className="w-3.5 h-3.5 mr-1" /> Clear
           </Button>
         )}
       </div>
 
       {/* Table */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-card">
+      <div className="glass-card rounded-2xl overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-surface-2">
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">Fine ID</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">Vehicle</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold hidden md:table-cell">Type</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">Amount</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold hidden lg:table-cell">Due Date</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">Status</th>
-                <th className="px-4 py-3"></th>
+              <tr className="border-b border-border bg-white/[0.02]">
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">Fine ID</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">Vehicle</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider hidden md:table-cell">Type</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">Amount</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider hidden lg:table-cell">Due Date</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">Status</th>
+                <th className="px-5 py-4"></th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 Array(5).fill(0).map((_, i) => (
-                  <tr key={i} className="border-b border-border/50">
+                  <tr key={i} className="border-b border-border/40 bg-black/10 animate-pulse">
                     {Array(7).fill(0).map((_, j) => (
-                      <td key={j} className="px-4 py-3"><div className="h-3 bg-surface-2 rounded animate-shimmer" /></td>
+                      <td key={j} className="px-5 py-4"><div className="h-4 bg-surface-2 rounded-lg" /></td>
                     ))}
                   </tr>
                 ))
               ) : paginated.length === 0 ? (
-                <tr><td colSpan={7} className="py-12">
+                <tr><td colSpan={7} className="py-16">
                   <EmptyState icon={CreditCard} title="No fines found" message="Fines are auto-generated when violations are logged." />
                 </td></tr>
               ) : (
@@ -187,34 +187,34 @@ export const FinesList = () => {
                   const veh = getVehicle(vio?.vehicleId);
                   const type = getType(vio?.typeId);
                   return (
-                    <tr key={f.id} className="border-b border-border/50 hover:bg-surface-2/30 transition-colors">
-                      <td className="px-4 py-3 font-mono text-xs text-text-secondary">{f.id?.slice(-8)}</td>
-                      <td className="px-4 py-3">
-                        <p className="font-mono font-bold text-xs text-text-primary">{veh?.regNumber || '—'}</p>
-                        <p className="text-xs text-text-secondary">{veh?.ownerName}</p>
+                    <tr key={f.id} className="border-b border-border/40 hover:bg-white/[0.02] transition-colors">
+                      <td className="px-5 py-4 font-mono text-xs text-text-secondary font-semibold">#{f.id?.slice(-8)}</td>
+                      <td className="px-5 py-4">
+                        <p className="font-mono font-bold text-xs text-text-primary bg-white/5 border border-white/5 px-2 py-0.5 rounded inline-block">{veh?.regNumber || '—'}</p>
+                        <p className="text-xs text-text-secondary font-medium mt-1">{veh?.ownerName}</p>
                       </td>
-                      <td className="px-4 py-3 text-xs text-text-primary hidden md:table-cell">{type?.name || '—'}</td>
-                      <td className="px-4 py-3 font-mono font-bold text-warn">{formatCurrency(f.amount)}</td>
-                      <td className="px-4 py-3 text-xs text-text-secondary hidden lg:table-cell">{formatDate(f.dueDate)}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4 text-xs text-text-primary font-bold hidden md:table-cell">{type?.name || '—'}</td>
+                      <td className="px-5 py-4 font-mono font-extrabold text-warn">{formatCurrency(f.amount)}</td>
+                      <td className="px-5 py-4 text-xs text-text-secondary font-medium hidden lg:table-cell">{formatDate(f.dueDate)}</td>
+                      <td className="px-5 py-4">
                         <Badge variant={f.isPaid ? 'safe' : 'danger'}>{f.isPaid ? 'Paid' : 'Unpaid'}</Badge>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
                           <button
                             onClick={() => navigate(`/violations/${f.violationId}`)}
-                            className="text-text-muted hover:text-accent transition-colors"
+                            className="text-text-muted hover:text-accent transition-colors p-1.5 rounded-lg hover:bg-white/5 cursor-pointer"
                             title="View violation"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-4.5 h-4.5" />
                           </button>
                           {!f.isPaid && (
                             <button
                               onClick={() => setPayId(f.id)}
-                              className="text-text-muted hover:text-safe transition-colors"
+                              className="text-text-muted hover:text-safe transition-colors p-1.5 rounded-lg hover:bg-white/5 cursor-pointer"
                               title="Mark as paid"
                             >
-                              <CheckCircle className="w-4 h-4" />
+                              <CheckCircle className="w-4.5 h-4.5" />
                             </button>
                           )}
                         </div>
@@ -227,11 +227,11 @@ export const FinesList = () => {
           </table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-            <p className="text-xs text-text-secondary">Page {page} of {totalPages}</p>
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-white/[0.01]">
+            <p className="text-xs text-text-muted font-semibold">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <Button variant="secondary" className="text-xs py-1" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</Button>
-              <Button variant="secondary" className="text-xs py-1" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
+              <Button variant="secondary" className="text-xs py-1.5 px-3.5 font-bold cursor-pointer" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</Button>
+              <Button variant="secondary" className="text-xs py-1.5 px-3.5 font-bold cursor-pointer" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
             </div>
           </div>
         )}

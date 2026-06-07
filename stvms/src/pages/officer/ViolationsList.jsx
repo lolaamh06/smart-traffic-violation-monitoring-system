@@ -124,35 +124,35 @@ export const ViolationsList = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display font-bold text-xl text-text-primary">Violations Registry</h2>
-          <p className="text-xs text-text-secondary">{filtered.length} records</p>
+          <h2 className="font-display font-extrabold text-xl text-text-primary uppercase tracking-wide">Violations Registry</h2>
+          <p className="text-xs text-text-muted font-bold mt-0.5">{filtered.length} records found</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={exportCSV} className="text-xs">
-            <Download className="w-3.5 h-3.5" /> Export CSV
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={exportCSV} className="text-xs py-2 px-3.5 font-bold shadow-sm cursor-pointer">
+            <Download className="w-4 h-4 mr-1.5" /> Export CSV
           </Button>
-          <Button variant="primary" onClick={() => navigate('/violations/new')} className="text-xs">
+          <Button variant="primary" onClick={() => navigate('/violations/new')} className="text-xs py-2 px-4 font-bold shadow-glow-primary cursor-pointer">
             + Log New
           </Button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 p-4 bg-surface border border-border rounded-lg">
-        <div className="relative flex-1 min-w-40">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
+      <div className="flex flex-wrap gap-4 p-5 glass-card rounded-2xl shadow-card">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input
-            className="w-full bg-surface-2 border border-border rounded pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder-text-muted focus:outline-none focus:border-accent"
+            className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-3 py-2.5 text-xs text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
             placeholder="Search reg number or owner…"
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
           />
         </div>
         <select
-          className="bg-surface-2 border border-border rounded px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent"
+          className="bg-surface-2 border border-border rounded-xl px-4 py-2.5 text-xs text-text-primary font-semibold focus:outline-none focus:border-accent cursor-pointer"
           value={filterZone}
           onChange={e => { setFilterZone(e.target.value); setPage(1); }}
         >
@@ -160,7 +160,7 @@ export const ViolationsList = () => {
           {zones.map(z => <option key={z}>{z}</option>)}
         </select>
         <select
-          className="bg-surface-2 border border-border rounded px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent"
+          className="bg-surface-2 border border-border rounded-xl px-4 py-2.5 text-xs text-text-primary font-semibold focus:outline-none focus:border-accent cursor-pointer"
           value={filterStatus}
           onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
         >
@@ -168,41 +168,41 @@ export const ViolationsList = () => {
           {['Pending', 'Contested', 'Closed'].map(s => <option key={s}>{s}</option>)}
         </select>
         {(search || filterZone || filterStatus) && (
-          <Button variant="secondary" className="text-xs" onClick={() => { setSearch(''); setFilterZone(''); setFilterStatus(''); }}>
-            <X className="w-3 h-3" /> Clear
+          <Button variant="secondary" className="text-xs py-2.5 px-4 font-bold cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/20" onClick={() => { setSearch(''); setFilterZone(''); setFilterStatus(''); }}>
+            <X className="w-3.5 h-3.5 mr-1" /> Clear
           </Button>
         )}
       </div>
 
       {/* Table */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-card">
+      <div className="glass-card rounded-2xl overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-surface-2">
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">ID</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">Vehicle</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold hidden md:table-cell">Type</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold hidden lg:table-cell">Location</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold hidden lg:table-cell">Date/Time</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">Fine</th>
-                <th className="text-left px-4 py-3 text-xs text-text-secondary font-display font-semibold">Status</th>
-                <th className="px-4 py-3"></th>
+              <tr className="border-b border-border bg-white/[0.02]">
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">ID</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">Vehicle</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider hidden md:table-cell">Type</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider hidden lg:table-cell">Location</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider hidden lg:table-cell">Date/Time</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">Fine</th>
+                <th className="text-left px-5 py-4 text-xs text-text-secondary font-display font-bold uppercase tracking-wider">Status</th>
+                <th className="px-5 py-4"></th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 Array(5).fill(0).map((_, i) => (
-                  <tr key={i} className="border-b border-border/50">
+                  <tr key={i} className="border-b border-border/40 bg-black/10 animate-pulse">
                     {Array(8).fill(0).map((_, j) => (
-                      <td key={j} className="px-4 py-3">
-                        <div className="h-3 bg-surface-2 rounded animate-shimmer" />
+                      <td key={j} className="px-5 py-4">
+                        <div className="h-4 bg-surface-2 rounded-lg" />
                       </td>
                     ))}
                   </tr>
                 ))
               ) : paginated.length === 0 ? (
-                <tr><td colSpan={8} className="py-12">
+                <tr><td colSpan={8} className="py-16">
                   <EmptyState icon={FileX} title="No violations found" message="Try adjusting your filters or log a new violation." />
                 </td></tr>
               ) : (
@@ -212,23 +212,23 @@ export const ViolationsList = () => {
                   const type = getType(v.typeId);
                   const fine = getFine(v.id);
                   return (
-                    <tr key={v.id} className="border-b border-border/50 hover:bg-surface-2/30 transition-colors">
-                      <td className="px-4 py-3 font-mono text-xs text-text-secondary">{v.id?.slice(-8)}</td>
-                      <td className="px-4 py-3">
-                        <p className="font-mono font-bold text-xs text-text-primary">{veh?.regNumber || '—'}</p>
-                        <p className="text-xs text-text-secondary">{veh?.ownerName}</p>
+                    <tr key={v.id} className="border-b border-border/40 hover:bg-white/[0.02] transition-colors">
+                      <td className="px-5 py-4 font-mono text-xs text-text-secondary font-semibold">#{v.id?.slice(-8)}</td>
+                      <td className="px-5 py-4">
+                        <p className="font-mono font-bold text-xs text-text-primary bg-white/5 border border-white/5 px-2 py-0.5 rounded inline-block">{veh?.regNumber || '—'}</p>
+                        <p className="text-xs text-text-secondary font-medium mt-1">{veh?.ownerName}</p>
                       </td>
-                      <td className="px-4 py-3 text-xs text-text-primary hidden md:table-cell">{type?.name || '—'}</td>
-                      <td className="px-4 py-3 text-xs hidden lg:table-cell">
-                        <p className="text-text-primary">{loc?.name || '—'}</p>
-                        <p className="text-text-muted">{loc?.zone}</p>
+                      <td className="px-5 py-4 text-xs text-text-primary font-bold hidden md:table-cell">{type?.name || '—'}</td>
+                      <td className="px-5 py-4 text-xs hidden lg:table-cell">
+                        <p className="text-text-primary font-bold">{loc?.name || '—'}</p>
+                        <p className="text-[10px] text-text-muted font-semibold mt-0.5 uppercase tracking-wide">{loc?.zone}</p>
                       </td>
-                      <td className="px-4 py-3 text-xs text-text-secondary hidden lg:table-cell">{formatDate(v.violationTime)}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-warn font-bold">{formatCurrency(fine?.amount || 0)}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4 text-xs text-text-secondary font-medium hidden lg:table-cell">{formatDate(v.violationTime)}</td>
+                      <td className="px-5 py-4 font-mono text-xs text-warn font-extrabold">{formatCurrency(fine?.amount || 0)}</td>
+                      <td className="px-5 py-4">
                         {editId === v.id ? (
                           <select
-                            className="bg-surface-2 border border-border rounded text-xs px-2 py-1 text-text-primary focus:outline-none"
+                            className="bg-surface-2 border border-border rounded-xl text-xs px-3 py-1.5 text-text-primary focus:outline-none focus:border-accent"
                             defaultValue={v.status}
                             autoFocus
                             onBlur={e => handleStatusUpdate(v.id, e.target.value)}
@@ -239,16 +239,16 @@ export const ViolationsList = () => {
                           <Badge variant={statusVariant(v.status)}>{v.status}</Badge>
                         )}
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => navigate(`/violations/${v.id}`)} className="text-text-muted hover:text-accent transition-colors">
-                            <Eye className="w-4 h-4" />
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => navigate(`/violations/${v.id}`)} className="text-text-muted hover:text-accent transition-colors p-1.5 rounded-lg hover:bg-white/5 cursor-pointer">
+                            <Eye className="w-4.5 h-4.5" />
                           </button>
-                          <button onClick={() => setEditId(editId === v.id ? null : v.id)} className="text-text-muted hover:text-warn transition-colors">
-                            <Pencil className="w-4 h-4" />
+                          <button onClick={() => setEditId(editId === v.id ? null : v.id)} className="text-text-muted hover:text-warn transition-colors p-1.5 rounded-lg hover:bg-white/5 cursor-pointer">
+                            <Pencil className="w-4.5 h-4.5" />
                           </button>
-                          <button onClick={() => setDeleteId(v.id)} className="text-text-muted hover:text-primary transition-colors">
-                            <Trash2 className="w-4 h-4" />
+                          <button onClick={() => setDeleteId(v.id)} className="text-text-muted hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-white/5 cursor-pointer">
+                            <Trash2 className="w-4.5 h-4.5" />
                           </button>
                         </div>
                       </td>
@@ -262,11 +262,11 @@ export const ViolationsList = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-            <p className="text-xs text-text-secondary">Page {page} of {totalPages}</p>
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-white/[0.01]">
+            <p className="text-xs text-text-muted font-semibold">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <Button variant="secondary" className="text-xs py-1" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</Button>
-              <Button variant="secondary" className="text-xs py-1" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
+              <Button variant="secondary" className="text-xs py-1.5 px-3.5 font-bold cursor-pointer" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</Button>
+              <Button variant="secondary" className="text-xs py-1.5 px-3.5 font-bold cursor-pointer" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
             </div>
           </div>
         )}

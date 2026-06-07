@@ -14,7 +14,7 @@ export const Button = ({
   loading = false, disabled = false, type = 'button',
   onClick, ...props
 }) => {
-  const base = 'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-semibold font-display transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-50 disabled:cursor-not-allowed';
+  const base = 'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-display transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-50 disabled:cursor-not-allowed';
   const variantClass = VARIANTS[variant] || VARIANTS.primary;
 
   return (
@@ -22,7 +22,7 @@ export const Button = ({
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
-      className={`${base} ${variantClass} ${className}`}
+      className={`${base} ${variantClass} shadow-sm active:scale-95 ${className}`}
       {...props}
     >
       {loading ? (

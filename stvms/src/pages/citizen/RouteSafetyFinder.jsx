@@ -562,53 +562,54 @@ export const RouteSafetyFinder = () => {
   const availableDests = AREA_OPTIONS.filter(a => a.id !== originId);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       {/* Header */}
       <div>
-        <h2 className="font-display font-bold text-xl text-text-primary">Safe Route Finder</h2>
-        <p className="text-xs text-text-secondary">
-          Find routes ranked by safety &amp; traffic camera violation score across Bengaluru
+        <h2 className="font-display font-extrabold text-2xl text-text-primary tracking-wide uppercase">Safe Route Finder</h2>
+        <p className="text-xs text-text-secondary font-medium">
+          Analyze and find commuter routes ranked by violation index &amp; camera surveillance density across Bengaluru
         </p>
       </div>
 
       {/* Input controls */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-card grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      <div className="glass-card rounded-2xl p-6 shadow-card grid grid-cols-1 md:grid-cols-4 gap-4 items-end border border-border/60">
         <div>
-          <label className="text-xs font-semibold text-text-secondary font-display uppercase tracking-wider block mb-1.5">
-            <MapPin className="w-3 h-3 inline mr-1" />Origin
+          <label className="text-xs font-extrabold text-text-secondary font-display uppercase tracking-wider block mb-2 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-accent" /> Origin
           </label>
           <select
             value={originId}
             onChange={e => { setOriginId(e.target.value); setActiveRouteIdx(0); toast.success('Route recalculated!'); }}
-            className="w-full bg-surface-2 border border-border rounded px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
+            className="w-full bg-surface-2 border border-border rounded-xl px-4 py-3.5 text-sm text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all duration-200"
           >
             {AREA_OPTIONS.map(a => (
-              <option key={a.id} value={a.id}>{a.label} ({a.zone})</option>
+              <option key={a.id} value={a.id} className="bg-bg text-text-primary">{a.label} ({a.zone})</option>
             ))}
           </select>
         </div>
 
-        <div className="flex items-end justify-center pb-0.5">
+        <div className="flex items-end justify-center pb-1">
           <button
             onClick={handleSwap}
-            className="bg-surface-2 border border-border rounded-full p-2 hover:border-accent hover:bg-accent/10 transition-all text-text-muted hover:text-accent"
+            type="button"
+            className="w-12 h-12 bg-surface-2 border border-border rounded-xl flex items-center justify-center hover:border-accent hover:bg-accent/10 hover:text-accent active:scale-95 transition-all duration-200 text-text-muted cursor-pointer"
             title="Swap origin & destination"
           >
-            <Route className="w-4 h-4" />
+            <Route className="w-5 h-5 rotate-90 md:rotate-0" />
           </button>
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-text-secondary font-display uppercase tracking-wider block mb-1.5">
-            <MapPin className="w-3 h-3 inline mr-1" />Destination
+          <label className="text-xs font-extrabold text-text-secondary font-display uppercase tracking-wider block mb-2 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-info" /> Destination
           </label>
           <select
             value={destId}
             onChange={e => { setDestId(e.target.value); setActiveRouteIdx(0); toast.success('Route recalculated!'); }}
-            className="w-full bg-surface-2 border border-border rounded px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
+            className="w-full bg-surface-2 border border-border rounded-xl px-4 py-3.5 text-sm text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all duration-200"
           >
             {availableDests.map(a => (
-              <option key={a.id} value={a.id}>{a.label} ({a.zone})</option>
+              <option key={a.id} value={a.id} className="bg-bg text-text-primary">{a.label} ({a.zone})</option>
             ))}
           </select>
         </div>
@@ -616,64 +617,80 @@ export const RouteSafetyFinder = () => {
         <Button
           variant="primary"
           onClick={() => { setActiveRouteIdx(0); toast.success('Showing safest route!'); }}
-          className="w-full py-2.5 flex items-center justify-center gap-2"
+          className="w-full py-3.5 flex items-center justify-center gap-2 cursor-pointer shadow-glow-primary"
         >
-          <Navigation className="w-4 h-4" /> Find Safe Route
+          <Navigation className="w-4.5 h-4.5" /> Recalculate Path
         </Button>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Ranked route cards */}
         <div className="space-y-4">
-          <h3 className="font-display font-bold text-sm text-text-secondary uppercase tracking-wider">
-            Routes Ranked by Safety
+          <h3 className="font-display font-extrabold text-xs text-text-secondary uppercase tracking-widest">
+            Surveillance-Ranked Routes
           </h3>
           <div className="space-y-3">
             {rankedRoutes.map((route, idx) => {
               const isSelected = idx === activeRouteIdx;
               const badgeVariant = route.riskLabel === 'Safe' ? 'safe' : route.riskLabel === 'Moderate' ? 'warn' : 'danger';
+              
+              const strokeColor = route.riskLabel === 'Safe' ? 'stroke-safe' : route.riskLabel === 'Moderate' ? 'stroke-warn' : 'stroke-primary';
+              const glowClass = route.riskLabel === 'Safe' ? 'shadow-glow-safe' : route.riskLabel === 'Moderate' ? 'shadow-glow-warn' : 'shadow-glow-primary';
 
               return (
                 <div
                   key={route.id}
                   onClick={() => setActiveRouteIdx(idx)}
-                  className={`p-4 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
+                  className={`p-5 rounded-2xl border text-left cursor-pointer transition-all duration-300 flex items-start gap-4 ${
                     isSelected
-                      ? 'bg-accent/10 border-accent shadow-card scale-[1.02]'
-                      : 'bg-surface border-border hover:border-accent/40'
+                      ? route.riskLabel === 'Safe' ? 'bg-safe/5 border-safe shadow-glow-safe scale-[1.01]'
+                        : route.riskLabel === 'Moderate' ? 'bg-warn/5 border-warn shadow-glow-warn scale-[1.01]'
+                        : 'bg-primary/5 border-primary shadow-glow-primary scale-[1.01]'
+                      : 'bg-surface/50 border-border hover:border-accent/40'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
-                        idx === 0 ? 'bg-safe text-bg' : idx === 1 ? 'bg-warn text-bg' : 'bg-primary/20 text-primary'
-                      }`}>
-                        {idx + 1}
-                      </span>
-                      <h4 className="font-display font-bold text-sm text-text-primary">
-                        {idx === 0 ? '🛡️ Safest Choice' : idx === 1 ? '⚡ Balanced' : '🚨 Fastest (Risky)'}
-                      </h4>
-                    </div>
-                    <Badge variant={badgeVariant}>{route.riskLabel}</Badge>
+                  {/* Circular SVG Gauge for Risk Score */}
+                  <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+                    <svg className="w-12 h-12 transform -rotate-90">
+                      <circle cx="24" cy="24" r="18" className="stroke-border/20" strokeWidth="3" fill="transparent" />
+                      <circle 
+                        cx="24" 
+                        cy="24" 
+                        r="18" 
+                        className={`${strokeColor} transition-all duration-500`} 
+                        strokeWidth="3.5" 
+                        fill="transparent" 
+                        strokeDasharray={2 * Math.PI * 18} 
+                        strokeDashoffset={2 * Math.PI * 18 * (1 - route.riskScore / 100)} 
+                        strokeLinecap="round" 
+                      />
+                    </svg>
+                    <span className="absolute text-[10px] font-mono font-extrabold text-text-primary">{route.riskScore}%</span>
                   </div>
 
-                  <p className="text-xs text-text-secondary font-semibold mt-2">{route.name}</p>
-                  <p className="text-xs text-text-muted mt-1 leading-relaxed">{route.description}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="font-display font-extrabold text-sm text-text-primary truncate">
+                        {idx === 0 ? '🛡️ Safest Choice' : idx === 1 ? '⚡ Balanced Path' : '🚨 High Risk Corridor'}
+                      </h4>
+                      <Badge variant={badgeVariant} className="font-extrabold text-[9px] uppercase tracking-wider">{route.riskLabel}</Badge>
+                    </div>
 
-                  <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border/40 text-xs text-text-secondary">
-                    <div className="flex items-center gap-1">
-                      <Route className="w-3 h-3 text-text-muted" />
-                      <strong className="text-text-primary">{route.distance}</strong>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-text-muted" />
-                      <strong className="text-text-primary">{route.duration}</strong>
-                    </div>
-                    <div>
-                      <span className="text-text-muted">Risk:</span>{' '}
-                      <strong className={`${
-                        route.riskLabel === 'Safe' ? 'text-safe' : route.riskLabel === 'Moderate' ? 'text-warn' : 'text-primary'
-                      }`}>{route.riskScore}%</strong>
+                    <p className="text-xs text-text-secondary font-semibold mt-1 truncate">{route.name}</p>
+                    <p className="text-xs text-text-muted mt-1 leading-relaxed line-clamp-2">{route.description}</p>
+
+                    <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border/40 text-[11px] text-text-secondary">
+                      <div className="flex items-center gap-1.5">
+                        <Route className="w-3.5 h-3.5 text-text-muted" />
+                        <span className="text-text-primary font-bold">{route.distance}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-text-muted" />
+                        <span className="text-text-primary font-bold">{route.duration}</span>
+                      </div>
+                      <div className="ml-auto text-[10px] text-text-muted uppercase font-bold tracking-wider">
+                        Rank {idx + 1}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -682,30 +699,36 @@ export const RouteSafetyFinder = () => {
           </div>
 
           {/* Summary card */}
-          <div className="p-4 rounded-xl bg-surface-2 border border-border text-xs text-text-secondary space-y-1">
-            <p className="font-semibold text-text-primary font-display">ℹ️ How We Rank Routes</p>
-            <p>Risk score is calculated from the density of traffic violations logged by officers at locations along each route — higher score = more cameras &amp; enforcement.</p>
+          <div className="p-4 rounded-2xl bg-surface-2/40 border border-border text-xs text-text-secondary space-y-2 leading-relaxed">
+            <p className="font-extrabold text-text-primary font-display uppercase tracking-wider text-[10px]">ℹ️ Safety Classification Engine</p>
+            <p className="text-text-secondary font-medium">
+              Risk scores are computed using real-time spatial logs of speed-limit violations, red-light runs, and active traffic enforcement nodes on each roadway segment.
+            </p>
           </div>
         </div>
 
         {/* Map */}
-        <div className="xl:col-span-2 bg-surface border border-border rounded-xl overflow-hidden shadow-card flex flex-col h-[520px]">
-          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div className="xl:col-span-2 glass-card rounded-2xl overflow-hidden shadow-card flex flex-col h-[560px] border border-border/60">
+          <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between bg-surface-2/20">
             <div>
-              <h4 className="font-display font-bold text-sm text-text-primary">
-                {originArea?.label} → {destArea?.label}
+              <h4 className="font-display font-extrabold text-sm text-text-primary uppercase tracking-wide">
+                {originArea?.label.split(' ')[0]} to {destArea?.label.split(' ')[0]}
               </h4>
-              <p className="text-xs text-text-muted">
-                {selectedRoute?.name || 'Select a route'} · {selectedRoute?.distance} · {selectedRoute?.duration}
+              <p className="text-xs text-text-muted font-medium mt-0.5">
+                {selectedRoute?.name} · <span className="font-bold text-text-secondary">{selectedRoute?.distance}</span> · <span className="font-bold text-text-secondary">{selectedRoute?.duration}</span>
               </p>
             </div>
             {selectedRoute?.riskLabel === 'Safe' ? (
-              <div className="flex items-center gap-1.5 text-xs text-safe bg-safe/10 px-2 py-1 rounded-md border border-safe/20">
-                <ShieldCheck className="w-3.5 h-3.5" /> Optimal Safe Path
+              <div className="flex items-center gap-1.5 text-xs text-safe bg-safe/10 px-3 py-1.5 rounded-xl border border-safe/25 font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4" /> Safest Path
+              </div>
+            ) : selectedRoute?.riskLabel === 'Moderate' ? (
+              <div className="flex items-center gap-1.5 text-xs text-warn bg-warn/10 px-3 py-1.5 rounded-xl border border-warn/25 font-bold uppercase tracking-wider">
+                <AlertTriangle className="w-4 h-4" /> Moderate Risk
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 text-xs text-warn bg-warn/10 px-2 py-1 rounded-md border border-warn/20">
-                <AlertTriangle className="w-3.5 h-3.5" /> Camera Enforcement Zone
+              <div className="flex items-center gap-1.5 text-xs text-primary bg-primary/10 px-3 py-1.5 rounded-xl border border-primary/25 font-bold uppercase tracking-wider">
+                <AlertTriangle className="w-4 h-4 animate-pulse" /> High Risk Trap
               </div>
             )}
           </div>

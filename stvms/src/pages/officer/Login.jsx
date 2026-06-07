@@ -80,33 +80,42 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated grid background */}
+      {/* Animated cyber-mesh grid background */}
       <div className="absolute inset-0" style={{
-        backgroundImage: `linear-gradient(rgba(30,58,95,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(30,58,95,0.15) 1px, transparent 1px)`,
-        backgroundSize: '40px 40px'
+        backgroundImage: `linear-gradient(rgba(10,132,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(10,132,255,0.06) 1px, transparent 1px)`,
+        backgroundSize: '50px 50px'
       }} />
-      {/* Glow effects */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+      
+      {/* Dynamic colorful blur highlights */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
 
-      <div className="relative z-10 w-full max-w-md">
+      <div className="relative z-10 w-full max-w-md animate-fade-up">
+        {/* Back Link */}
+        <button
+          onClick={() => navigate('/')}
+          className="mb-4 text-xs font-bold text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1 cursor-pointer group"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Portal Selection
+        </button>
+
         {/* Card */}
-        <div className="bg-surface border border-border rounded-xl shadow-card p-8">
+        <div className="glass-card rounded-3xl shadow-card p-8 md:p-10 border border-border">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center mb-4 shadow-glow-primary">
               <ShieldAlert className="w-9 h-9 text-primary" />
             </div>
-            <h1 className="font-display font-bold text-2xl text-text-primary tracking-tight">STVMS</h1>
-            <p className="text-sm text-text-secondary mt-1">Smart Traffic Violation Monitoring System</p>
-            <span className="mt-2 px-3 py-0.5 rounded-full text-xs font-semibold bg-accent/10 border border-accent/30 text-accent">
+            <h1 className="font-display font-extrabold text-2xl text-text-primary tracking-tight">STVMS</h1>
+            <p className="text-xs text-text-secondary mt-1 font-medium">Smart Traffic Violation Monitoring System</p>
+            <span className="mt-3 px-3 py-1 rounded-full text-[10px] font-extrabold bg-primary/10 border border-primary/25 text-primary uppercase tracking-wider shadow-sm">
               Officer Portal
             </span>
           </div>
 
           {/* Sandbox Banner */}
           {sandboxMode && (
-            <div className="mb-4 p-3 rounded-md bg-warn/10 border border-warn/30 text-xs text-warn font-medium text-center">
+            <div className="mb-4 p-3 rounded-xl bg-warn/10 border border-warn/25 text-xs text-warn font-semibold text-center">
               Running in Sandbox Mode — credentials are pre-filled below
             </div>
           )}
@@ -115,69 +124,69 @@ export const Login = () => {
           <button
             onClick={handleAutoLogin}
             disabled={autoTyping || loading}
-            className="w-full mb-6 flex items-center justify-center gap-2 p-3 rounded-lg border border-safe/40 bg-safe/10 text-safe text-sm font-semibold hover:bg-safe/20 transition-all disabled:opacity-50 group"
+            className="w-full mb-6 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-safe/25 bg-safe/5 text-safe text-sm font-bold hover:bg-safe/15 hover:shadow-glow-safe transition-all duration-300 disabled:opacity-50 group cursor-pointer active:scale-95 shadow-sm"
           >
-            <Zap className="w-4 h-4 group-hover:animate-pulse" />
-            {autoTyping ? 'Auto-typing credentials...' : '⚡ Quick Demo Login (Auto-fill & Sign In)'}
+            <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            {autoTyping ? 'Auto-typing credentials...' : '⚡ Quick Demo Login'}
           </button>
 
           <div className="relative flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-text-muted font-medium">or enter manually</span>
+            <span className="text-[10px] text-text-muted font-extrabold uppercase tracking-wider">or enter manually</span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="relative">
-              <label className="text-xs font-semibold text-text-secondary font-display uppercase tracking-wider block mb-1">Email Address</label>
+              <label className="text-[10px] font-extrabold text-text-secondary font-display uppercase tracking-widest block mb-2">Email Address</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   ref={emailRef}
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="officer@stvms.gov"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-4 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
                   autoComplete="email"
                 />
               </div>
             </div>
 
             <div className="relative">
-              <label className="text-xs font-semibold text-text-secondary font-display uppercase tracking-wider block mb-1">Password</label>
+              <label className="text-[10px] font-extrabold text-text-secondary font-display uppercase tracking-widest block mb-2">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-10 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-11 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer p-1"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="flex items-start gap-2 text-sm text-primary bg-primary/10 border border-primary/30 rounded-md p-3">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{error}</span>
+              <div className="flex items-start gap-2.5 text-xs text-primary bg-primary/10 border border-primary/25 rounded-xl p-3.5 shadow-sm">
+                <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-primary" />
+                <span className="font-semibold leading-relaxed">{error}</span>
               </div>
             )}
 
             <Button
               type="submit"
               variant="primary"
-              className="w-full py-3 text-base mt-2"
+              className="w-full py-3.5 text-sm font-bold mt-2 shadow-glow-primary active:scale-95 transition-transform"
               loading={loading}
             >
               Sign In to Officer Portal
@@ -185,14 +194,14 @@ export const Login = () => {
           </form>
 
           {/* Hint */}
-          <p className="text-center text-xs text-text-muted mt-6">
+          <p className="text-center text-[10px] text-text-muted mt-6 font-semibold leading-relaxed">
             Officers are registered by the system administrator.<br />
             Contact admin for access credentials.
           </p>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-text-muted mt-4">
+        <p className="text-center text-[10px] text-text-muted mt-5 font-semibold">
           BMSIT &amp; M — DBMS Mini Project 4th Sem · SDG 9
         </p>
       </div>

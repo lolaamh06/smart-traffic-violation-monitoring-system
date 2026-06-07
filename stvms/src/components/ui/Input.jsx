@@ -12,8 +12,8 @@ export const Input = ({
     )}
     <input
       type={type}
-      className={`bg-surface-2 border rounded-md px-3 py-2.5 text-sm text-text-primary placeholder-text-muted focus:outline-none transition-all
-        ${error ? 'border-primary focus:border-primary' : 'border-border focus:border-accent'}
+      className={`bg-surface-2 border rounded-xl px-4 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none transition-all duration-200
+        ${error ? 'border-primary focus:border-primary shadow-glow-primary/10' : 'border-border focus:border-accent focus:shadow-glow-accent/10'}
         ${inputClassName}`}
       {...props}
     />

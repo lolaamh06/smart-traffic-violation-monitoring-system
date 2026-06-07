@@ -94,22 +94,34 @@ export const CitizenLogin = () => {
 
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated cyber-mesh grid background */}
       <div className="absolute inset-0" style={{
-        backgroundImage: `linear-gradient(rgba(30,58,95,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(30,58,95,0.15) 1px, transparent 1px)`,
-        backgroundSize: '40px 40px'
+        backgroundImage: `linear-gradient(rgba(10,132,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(10,132,255,0.06) 1px, transparent 1px)`,
+        backgroundSize: '50px 50px'
       }} />
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+      
+      {/* Dynamic colorful blur highlights */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-safe/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
 
-      <div className="relative z-10 w-full max-w-md">
-        <div className="bg-surface border border-border rounded-xl shadow-card p-8">
+      <div className="relative z-10 w-full max-w-md animate-fade-up">
+        {/* Back Link */}
+        <button
+          onClick={() => navigate('/')}
+          className="mb-4 text-xs font-bold text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1 cursor-pointer group"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Portal Selection
+        </button>
+
+        <div className="glass-card rounded-3xl shadow-card p-8 md:p-10 border border-border">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-safe/10 border border-safe/30 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-safe/20 to-safe/5 border border-safe/30 flex items-center justify-center mb-4 shadow-glow-safe">
               <Car className="w-9 h-9 text-safe" />
             </div>
-            <h1 className="font-display font-bold text-2xl text-text-primary">STVMS Citizen</h1>
-            <p className="text-sm text-text-secondary mt-1">Check violations, pay fines, contest tickets</p>
-            <span className="mt-2 px-3 py-0.5 rounded-full text-xs font-semibold bg-safe/10 border border-safe/30 text-safe">
+            <h1 className="font-display font-extrabold text-2xl text-text-primary">STVMS Citizen</h1>
+            <p className="text-xs text-text-secondary mt-1 font-medium">Check violations, pay fines, contest tickets</p>
+            <span className="mt-3 px-3 py-1 rounded-full text-[10px] font-extrabold bg-safe/10 border border-safe/25 text-safe uppercase tracking-wider shadow-sm animate-pulse-glow">
               Citizen Portal
             </span>
           </div>
@@ -118,25 +130,25 @@ export const CitizenLogin = () => {
           <button
             onClick={handleAutoLogin}
             disabled={autoTyping || loading}
-            className="w-full mb-6 flex items-center justify-center gap-2 p-3 rounded-lg border border-safe/40 bg-safe/10 text-safe text-sm font-semibold hover:bg-safe/20 transition-all disabled:opacity-50 group"
+            className="w-full mb-6 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-safe/25 bg-safe/5 text-safe text-sm font-bold hover:bg-safe/15 hover:shadow-glow-safe transition-all duration-300 disabled:opacity-50 group cursor-pointer active:scale-95 shadow-sm"
           >
-            <Zap className="w-4 h-4 group-hover:animate-pulse" />
-            {autoTyping ? 'Auto-typing credentials...' : '⚡ Quick Demo — Citizen Login'}
+            <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            {autoTyping ? 'Auto-typing credentials...' : '⚡ Quick Demo Login'}
           </button>
 
           <div className="relative flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-text-muted font-medium">or continue with</span>
+            <span className="text-[10px] text-text-muted font-extrabold uppercase tracking-wider">or continue with</span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Tabs */}
-          <div className="flex rounded-lg bg-surface-2 p-1 mb-6 gap-1">
+          <div className="flex rounded-xl bg-black/25 p-1 mb-6 border border-border">
             {['login', 'register'].map(t => (
               <button
                 key={t}
                 onClick={() => { setTab(t); setError(''); }}
-                className={`flex-1 py-2 text-xs font-semibold rounded-md transition-all capitalize ${tab === t ? 'bg-surface text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all duration-300 capitalize cursor-pointer ${tab === t ? 'bg-surface-2 text-text-primary border border-white/5 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
               >
                 {t === 'login' ? 'Sign In' : 'Create Account'}
               </button>
@@ -145,87 +157,97 @@ export const CitizenLogin = () => {
 
           {/* Login Form */}
           {tab === 'login' && (
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-5">
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="Email address"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-4 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-10 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-11 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary">
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer p-1">
+                  {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                 </button>
               </div>
-              {error && <div className="flex items-start gap-2 text-sm text-primary bg-primary/10 border border-primary/30 rounded-md p-3"><AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /><span>{error}</span></div>}
-              <Button type="submit" variant="primary" className="w-full py-3" loading={loading}>Sign In</Button>
+              {error && (
+                <div className="flex items-start gap-2.5 text-xs text-primary bg-primary/10 border border-primary/25 rounded-xl p-3.5 shadow-sm">
+                  <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-primary" />
+                  <span className="font-semibold leading-relaxed">{error}</span>
+                </div>
+              )}
+              <Button type="submit" variant="primary" className="w-full py-3.5 text-sm font-bold shadow-glow-primary active:scale-95 transition-transform" loading={loading}>Sign In</Button>
             </form>
           )}
 
           {/* Register Form */}
           {tab === 'register' && (
-            <form onSubmit={handleRegister} className="space-y-4">
+            <form onSubmit={handleRegister} className="space-y-5">
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="Full name"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-4 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
                 />
               </div>
               <div className="relative">
-                <Car className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Car className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   type="text"
                   value={regNumber}
                   onChange={e => setRegNumber(e.target.value.toUpperCase())}
-                  placeholder="Vehicle Reg. Number (KA-01-AB-1234)"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-4 py-3 text-sm font-mono text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all uppercase tracking-widest"
+                  placeholder="Vehicle Reg. (KA-01-AB-1234)"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm font-mono text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all uppercase tracking-wider"
                 />
               </div>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="Email address"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-4 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Create password"
-                  className="w-full bg-surface-2 border border-border rounded-md pl-10 pr-10 py-3 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
+                  className="w-full bg-surface-2 border border-border rounded-xl pl-11 pr-11 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-all"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary">
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer p-1">
+                  {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                 </button>
               </div>
-              {error && <div className="flex items-start gap-2 text-sm text-primary bg-primary/10 border border-primary/30 rounded-md p-3"><AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /><span>{error}</span></div>}
-              <Button type="submit" variant="primary" className="w-full py-3" loading={loading}>Create Account</Button>
+              {error && (
+                <div className="flex items-start gap-2.5 text-xs text-primary bg-primary/10 border border-primary/25 rounded-xl p-3.5 shadow-sm">
+                  <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-primary" />
+                  <span className="font-semibold leading-relaxed">{error}</span>
+                </div>
+              )}
+              <Button type="submit" variant="primary" className="w-full py-3.5 text-sm font-bold shadow-glow-primary active:scale-95 transition-transform" loading={loading}>Create Account</Button>
             </form>
           )}
         </div>
-        <p className="text-center text-xs text-text-muted mt-4">BMSIT &amp; M — STVMS Citizen Portal · SDG 11</p>
+        <p className="text-center text-[10px] text-text-muted mt-5 font-semibold">BMSIT &amp; M — STVMS Citizen Portal · SDG 11</p>
       </div>
     </div>
   );

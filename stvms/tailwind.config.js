@@ -23,9 +23,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['DM Sans', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
         mono:    ['JetBrains Mono', 'monospace'],
-        sans:    ['DM Sans', 'system-ui', 'sans-serif'],
+        sans:    ['Outfit', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         card: 'var(--shadow-card)',

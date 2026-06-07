@@ -1,33 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================================
-   DESIGN TOKENS — STVMS Dark Government Theme
+   DESIGN TOKENS — STVMS Premium Obsidian Glass Theme
    ============================================================ */
 :root {
   /* Backgrounds */
-  --color-bg:         #070F1A;
-  --color-surface:    #0D1F33;
-  --color-surface-2:  #112540;
-  --color-border:     #1E3A5F;
+  --color-bg:         #050811; /* Extremely deep obsidian blue-black */
+  --color-surface:    rgba(10, 17, 33, 0.75); /* Translucent glass surface */
+  --color-surface-2:  rgba(16, 26, 48, 0.85); /* Slightly lighter glass surface */
+  --color-border:     rgba(30, 58, 95, 0.35); /* Crisp slate border */
+  --color-border-glow: rgba(0, 122, 255, 0.15);
 
-  /* Brand */
-  --color-primary:    #E53E3E;
-  --color-accent:     #3182CE;
-  --color-safe:       #38A169;
-  --color-warn:       #D69E2E;
-  --color-info:       #805AD5;
+  /* Neon Hues */
+  --color-primary:    #FF3B30; /* Electric Crimson Red */
+  --color-accent:     #0A84FF; /* Vibrant Cyber Blue */
+  --color-safe:       #10B981; /* Emerald Green */
+  --color-warn:       #F59E0B; /* Vivid Amber */
+  --color-info:       #BF5AF2; /* Neon Violet */
 
-  /* Text */
-  --color-text-primary:   #E2E8F0;
-  --color-text-secondary: #94A3B8;
-  --color-text-muted:     #475569;
+  /* Text Colors */
+  --color-text-primary:   #F8FAFC; /* Slate 50 */
+  --color-text-secondary: #94A3B8; /* Slate 400 */
+  --color-text-muted:     #64748B; /* Slate 500 */
 
-  /* Shadows */
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  /* Premium Shadows & Blurs */
+  --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-glow-primary: 0 0 20px -3px rgba(255, 59, 48, 0.25);
+  --shadow-glow-accent:  0 0 20px -3px rgba(10, 132, 255, 0.25);
+  --shadow-glow-safe:    0 0 20px -3px rgba(16, 185, 129, 0.25);
 }
 
 /* ============================================================
@@ -45,8 +49,12 @@ body {
   margin: 0;
   padding: 0;
   background-color: var(--color-bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(10, 132, 255, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(191, 90, 242, 0.03) 0px, transparent 50%);
+  background-attachment: fixed;
   color: var(--color-text-primary);
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
   min-height: 100vh;
 }
 
@@ -55,56 +63,113 @@ body {
 /* ============================================================
    SCROLLBAR
    ============================================================ */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--color-surface); }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #050811; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; border: 2px solid #050811; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
 
 /* ============================================================
-   TYPOGRAPHY
+   GLASSMORPHISM & GLOWING UTILITIES
    ============================================================ */
-.font-display { font-family: 'DM Sans', sans-serif; }
+.glass-card {
+  background: var(--color-surface);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(10, 132, 255, 0.25);
+}
+
+.glass-card-accent:hover {
+  border-color: rgba(10, 132, 255, 0.4);
+  box-shadow: var(--shadow-glow-accent), var(--shadow-card);
+}
+
+.glass-card-primary:hover {
+  border-color: rgba(255, 59, 48, 0.4);
+  box-shadow: var(--shadow-glow-primary), var(--shadow-card);
+}
+
+.glass-card-safe:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: var(--shadow-glow-safe), var(--shadow-card);
+}
+
+/* ============================================================
+   TYPOGRAPHY & UTILITIES
+   ============================================================ */
+.font-display { font-family: 'Outfit', sans-serif; }
 .font-mono    { font-family: 'JetBrains Mono', monospace; }
 
-/* ============================================================
-   SELECTION
-   ============================================================ */
-::selection { background-color: rgba(49, 130, 206, 0.3); color: #E2E8F0; }
+/* Active Glow Indicators */
+.active-nav-glow {
+  position: relative;
+}
+.active-nav-glow::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 25%;
+  height: 50%;
+  width: 4px;
+  background: var(--color-primary);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 10px var(--color-primary);
+}
 
 /* ============================================================
-   ANIMATIONS
+   ANIMATIONS & TRANSITIONS
    ============================================================ */
-@keyframes shimmer {
-  0%   { opacity: 1; }
-  50%  { opacity: 0.4; }
-  100% { opacity: 1; }
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-12px); }
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(12px); }
   to   { opacity: 1; transform: translateX(0); }
 }
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+
+@keyframes pulseGlow {
+  0%, 100% { border-color: var(--color-border); box-shadow: var(--shadow-card); }
+  50% { border-color: rgba(10, 132, 255, 0.25); box-shadow: 0 0 15px -3px rgba(10, 132, 255, 0.15), var(--shadow-card); }
 }
 
-.animate-shimmer  { animation: shimmer 1.6s ease-in-out infinite; }
-.animate-fade-in  { animation: fadeIn  0.35s ease forwards; }
-.animate-slide-in { animation: slideIn 0.3s ease forwards; }
-.animate-scale-in { animation: scaleIn 0.25s ease forwards; }
-.animate-pulse    { animation: pulse   2s cubic-bezier(0.4,0,0.6,1) infinite; }
+.animate-fade-up {
+  animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+/* Staggered Delay Utilities */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
 
 /* ============================================================
-   FORM INPUTS — Override browser defaults
+   FORM INPUTS — Overrides
    ============================================================ */
+input, select, textarea {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15) !important;
+}
+
 input[type="datetime-local"],
 input[type="date"],
 input[type="time"] {
@@ -112,15 +177,14 @@ input[type="time"] {
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   color: var(--color-text-primary);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
 }
 
 select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 2rem;
+  background-position: right 12px center;
+  padding-right: 2.25rem;
   -webkit-appearance: none;
   appearance: none;
 }
@@ -129,45 +193,31 @@ select {
    MAP CONTAINER
    ============================================================ */
 .leaflet-container {
-  background: var(--color-surface-2) !important;
-  font-family: 'DM Sans', sans-serif !important;
+  background: #090e1a !important;
+  font-family: 'Outfit', sans-serif !important;
+  border-radius: 8px;
 }
 .leaflet-popup-content-wrapper {
-  background: var(--color-surface) !important;
+  background: rgba(10, 17, 33, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
   border: 1px solid var(--color-border) !important;
   color: var(--color-text-primary) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   box-shadow: var(--shadow-card) !important;
 }
-.leaflet-popup-tip { background: var(--color-surface) !important; }
-.leaflet-control-zoom a {
-  background: var(--color-surface) !important;
-  border-color: var(--color-border) !important;
-  color: var(--color-text-primary) !important;
-}
-.leaflet-control-attribution {
-  background: rgba(13, 31, 51, 0.8) !important;
-  color: var(--color-text-muted) !important;
-}
+.leaflet-popup-tip { background: rgba(10, 17, 33, 0.9) !important; }
 
 /* ============================================================
    RECHARTS
    ============================================================ */
-.recharts-cartesian-axis-tick-value { fill: var(--color-text-secondary) !important; }
+.recharts-cartesian-axis-tick-value { fill: var(--color-text-secondary) !important; font-size: 11px; }
 .recharts-tooltip-wrapper { outline: none !important; }
-
-/* ============================================================
-   MODAL BACKDROP
-   ============================================================ */
-.modal-backdrop {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
 
 /* ============================================================
    PRINT STYLES
    ============================================================ */
 @media print {
-  body { background: white !important; color: #000 !important; }
+  body { background: white !important; color: #000 !important; background-image: none !important; }
   .no-print { display: none !important; }
 }
+

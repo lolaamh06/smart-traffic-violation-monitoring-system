@@ -133,92 +133,102 @@ export const AnalyticsMap = () => {
   const zones = [...new Set(locations.map(l => l.zone))];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 animate-fade-up">
       {/* Header & Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display font-bold text-xl text-text-primary">Analytics & Hotspot Map</h2>
-          <p className="text-xs text-text-secondary">Spatial and temporal violation intelligence</p>
+          <h2 className="font-display font-extrabold text-2xl text-text-primary tracking-wide uppercase">Analytics & Hotspot Map</h2>
+          <p className="text-xs text-text-secondary font-medium">Spatial and temporal traffic violation intelligence</p>
         </div>
         <div className="flex gap-3">
           <select
-            className="bg-surface border border-border rounded px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent"
+            className="bg-surface-2 border border-border rounded-xl px-4 py-2 text-xs font-bold font-display uppercase tracking-wider text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all duration-200"
             value={filterDays}
             onChange={e => setFilterDays(Number(e.target.value))}
           >
-            <option value={7}>Last 7 days</option>
-            <option value={30}>Last 30 days</option>
-            <option value={90}>Last 90 days</option>
+            <option value={7} className="bg-bg text-text-primary">Last 7 Days</option>
+            <option value={30} className="bg-bg text-text-primary">Last 30 Days</option>
+            <option value={90} className="bg-bg text-text-primary">Last 90 Days</option>
           </select>
           <select
-            className="bg-surface border border-border rounded px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent"
+            className="bg-surface-2 border border-border rounded-xl px-4 py-2 text-xs font-bold font-display uppercase tracking-wider text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all duration-200"
             value={selectedZone}
             onChange={e => setSelectedZone(e.target.value)}
           >
-            <option value="">All Zones</option>
-            {zones.map(z => <option key={z}>{z}</option>)}
+            <option value="" className="bg-bg text-text-secondary">All Zones</option>
+            {zones.map(z => <option key={z} value={z} className="bg-bg text-text-primary">{z} Zone</option>)}
           </select>
         </div>
       </div>
 
       {/* Summary Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'Violations', value: recent.length, color: 'text-primary' },
-          { label: 'Hot Zones', value: hotZones.filter(z => z.count > 3).length, color: 'text-warn' },
-          { label: 'Types Recorded', value: barData.length, color: 'text-accent' },
-          { label: 'Est. Revenue', value: formatCurrency(revenue), color: 'text-safe' },
-        ].map(({ label, value, color }) => (
-          <div key={label} className="bg-surface border border-border rounded-lg p-3">
-            <p className="text-xs text-text-secondary mb-0.5">{label}</p>
-            <p className={`font-display font-bold text-lg ${color}`}>{value}</p>
+          { label: 'Total Violations', value: recent.length, color: 'text-primary', glowClass: 'glass-card-primary', badge: 'Alerts' },
+          { label: 'Active Hot Zones', value: hotZones.filter(z => z.count > 3).length, color: 'text-warn', hoverGlow: 'hover:border-warn/40 hover:shadow-glow-warn', badge: 'Density' },
+          { label: 'Types Recorded', value: barData.length, color: 'text-accent', glowClass: 'glass-card-accent', badge: 'Categories' },
+          { label: 'Estimated Fines', value: formatCurrency(revenue), color: 'text-safe', glowClass: 'glass-card-safe', badge: 'Revenue' },
+        ].map(({ label, value, color, glowClass, hoverGlow, badge }) => (
+          <div 
+            key={label} 
+            className={`glass-card rounded-2xl p-5 border border-border/60 hover:scale-[1.02] transition-all duration-300 ${glowClass || ''} ${hoverGlow || ''}`}
+          >
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-[10px] text-text-muted uppercase tracking-widest font-extrabold font-display">{label}</span>
+              <Badge variant="ghost" className="text-[9px] uppercase tracking-wider text-text-muted border-none bg-surface-2/40 px-1.5 py-0.5">{badge}</Badge>
+            </div>
+            <p className={`font-display font-extrabold text-2xl tracking-tight ${color}`}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* Map */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-card">
-        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-          <h3 className="font-display font-bold text-sm text-text-primary">Live Hotspot Map</h3>
-          <div className="flex items-center gap-4 text-xs">
+      <div className="glass-card rounded-2xl overflow-hidden shadow-card border border-border/60">
+        <div className="px-6 py-4 border-b border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-surface-2/20">
+          <h3 className="font-display font-extrabold text-sm text-text-primary uppercase tracking-wide">Live Density Analysis Map</h3>
+          <div className="flex flex-wrap items-center gap-4 text-xs font-bold font-display uppercase tracking-wider text-text-secondary">
             {Object.entries(HEAT_COLORS).map(([severity, color]) => (
-              <div key={severity} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
-                <span className="text-text-secondary">{severity}</span>
+              <div key={severity} className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ background: color, boxShadow: `0 0 10px ${color}` }} />
+                <span>{severity}</span>
               </div>
             ))}
           </div>
         </div>
-        <div className="h-96">
+        <div className="h-[420px] relative">
           <MapWrapper markers={markers} />
         </div>
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <div className="bg-surface border border-border rounded-lg p-5 shadow-card">
-          <h3 className="font-display font-bold text-sm text-text-primary mb-4">Violations by Type</h3>
-          <ViolationBarChart data={barData} />
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="glass-card rounded-2xl p-6 shadow-card border border-border/60">
+          <h3 className="font-display font-extrabold text-xs text-text-secondary uppercase tracking-widest mb-6">Violations by Category</h3>
+          <div className="h-72">
+            <ViolationBarChart data={barData} />
+          </div>
         </div>
-        <div className="bg-surface border border-border rounded-lg p-5 shadow-card">
-          <h3 className="font-display font-bold text-sm text-text-primary mb-4">Daily Trend</h3>
-          <ViolationLineChart data={lineData} />
+        <div className="glass-card rounded-2xl p-6 shadow-card border border-border/60">
+          <h3 className="font-display font-extrabold text-xs text-text-secondary uppercase tracking-widest mb-6">Temporal Daily Trend</h3>
+          <div className="h-72">
+            <ViolationLineChart data={lineData} />
+          </div>
         </div>
       </div>
 
       {/* Hot Zones Table */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-card">
-        <div className="px-5 py-4 border-b border-border">
-          <h3 className="font-display font-bold text-sm text-text-primary">Zone Violation Breakdown</h3>
+      <div className="glass-card rounded-2xl overflow-hidden shadow-card border border-border/60">
+        <div className="px-6 py-5 border-b border-border/60 bg-surface-2/20">
+          <h3 className="font-display font-extrabold text-sm text-text-primary uppercase tracking-wide">Zone Violation Breakdown</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-surface-2">
-                <th className="text-left px-4 py-2 text-xs text-text-secondary font-semibold font-display">Zone</th>
-                <th className="text-left px-4 py-2 text-xs text-text-secondary font-semibold font-display">Violations</th>
-                <th className="text-left px-4 py-2 text-xs text-text-secondary font-semibold font-display">% Share</th>
-                <th className="text-left px-4 py-2 text-xs text-text-secondary font-semibold font-display">Risk Level</th>
+              <tr className="border-b border-border/60 bg-surface-2/50">
+                <th className="text-left px-6 py-3 text-[10px] text-text-muted font-extrabold font-display uppercase tracking-widest">Zone Jurisdiction</th>
+                <th className="text-left px-6 py-3 text-[10px] text-text-muted font-extrabold font-display uppercase tracking-widest">Violations Count</th>
+                <th className="text-left px-6 py-3 text-[10px] text-text-muted font-extrabold font-display uppercase tracking-widest">Relative Share</th>
+                <th className="text-left px-6 py-3 text-[10px] text-text-muted font-extrabold font-display uppercase tracking-widest">Enforcement Risk</th>
               </tr>
             </thead>
             <tbody>
@@ -226,19 +236,22 @@ export const AnalyticsMap = () => {
                 const pct = ((count / (recent.length || 1)) * 100).toFixed(1);
                 const risk = count > 10 ? 'Critical' : count > 5 ? 'High' : count > 2 ? 'Moderate' : 'Low';
                 return (
-                  <tr key={zone} className="border-b border-border/50 hover:bg-surface-2/30 transition-colors">
-                    <td className="px-4 py-3 font-semibold text-text-primary">{zone}</td>
-                    <td className="px-4 py-3 font-mono text-text-primary">{count}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+                  <tr key={zone} className="border-b border-border/20 hover:bg-surface-2/20 transition-all duration-150">
+                    <td className="px-6 py-4 font-bold text-text-primary">{zone} Zone</td>
+                    <td className="px-6 py-4 font-mono font-extrabold text-text-primary">{count}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-28 h-2 bg-surface-2 rounded-full overflow-hidden border border-border/40">
                           <div className="h-full rounded-full" style={{ width: `${pct}%`, background: HEAT_COLORS[risk] }} />
                         </div>
-                        <span className="text-xs text-text-secondary">{pct}%</span>
+                        <span className="text-xs text-text-secondary font-mono font-bold">{pct}%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={risk === 'Critical' ? 'danger' : risk === 'High' ? 'warn' : risk === 'Moderate' ? 'accent' : 'safe'}>
+                    <td className="px-6 py-4">
+                      <Badge 
+                        variant={risk === 'Critical' ? 'danger' : risk === 'High' ? 'warn' : risk === 'Moderate' ? 'accent' : 'safe'}
+                        className="font-extrabold text-[9px] uppercase tracking-wider"
+                      >
                         {risk}
                       </Badge>
                     </td>
