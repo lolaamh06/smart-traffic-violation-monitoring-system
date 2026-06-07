@@ -32,3 +32,6 @@ Thumbs.db
 # Temp/Script files
 __pycache__/
 extract_docx.py
+
+# Screenshots
+screenshots/
