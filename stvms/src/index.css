@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   DESIGN TOKENS — STVMS Dark Government Theme
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --color-bg:         #070F1A;
+  --color-surface:    #0D1F33;
+  --color-surface-2:  #112540;
+  --color-border:     #1E3A5F;
+
+  /* Brand */
+  --color-primary:    #E53E3E;
+  --color-accent:     #3182CE;
+  --color-safe:       #38A169;
+  --color-warn:       #D69E2E;
+  --color-info:       #805AD5;
+
+  /* Text */
+  --color-text-primary:   #E2E8F0;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted:     #475569;
+
+  /* Shadows */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+#root { min-height: 100vh; }
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.font-display { font-family: 'DM Sans', sans-serif; }
+.font-mono    { font-family: 'JetBrains Mono', monospace; }
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+::selection { background-color: rgba(49, 130, 206, 0.3); color: #E2E8F0; }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes shimmer {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.animate-shimmer  { animation: shimmer 1.6s ease-in-out infinite; }
+.animate-fade-in  { animation: fadeIn  0.35s ease forwards; }
+.animate-slide-in { animation: slideIn 0.3s ease forwards; }
+.animate-scale-in { animation: scaleIn 0.25s ease forwards; }
+.animate-pulse    { animation: pulse   2s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+/* ============================================================
+   FORM INPUTS — Override browser defaults
+   ============================================================ */
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"] {
+  color-scheme: dark;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 2rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ============================================================
+   MAP CONTAINER
+   ============================================================ */
+.leaflet-container {
+  background: var(--color-surface-2) !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+.leaflet-popup-content-wrapper {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow-card) !important;
+}
+.leaflet-popup-tip { background: var(--color-surface) !important; }
+.leaflet-control-zoom a {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-primary) !important;
+}
+.leaflet-control-attribution {
+  background: rgba(13, 31, 51, 0.8) !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* ============================================================
+   RECHARTS
+   ============================================================ */
+.recharts-cartesian-axis-tick-value { fill: var(--color-text-secondary) !important; }
+.recharts-tooltip-wrapper { outline: none !important; }
+
+/* ============================================================
+   MODAL BACKDROP
+   ============================================================ */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  body { background: white !important; color: #000 !important; }
+  .no-print { display: none !important; }
+}

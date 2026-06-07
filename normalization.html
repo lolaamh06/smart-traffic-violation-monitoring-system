@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STVMS — Normalization Documentation (3NF)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #0B1120;
+      --color-surface: #141E30;
+      --color-surface-2: #1C2A40;
+      --color-border: #1E3A5F;
+      --color-primary: #E53E3E;
+      --color-accent: #3182CE;
+      --color-warn: #D69E2E;
+      --color-safe: #38A169;
+      --color-text-primary: #E2E8F0;
+      --color-text-secondary: #718096;
+      --color-danger: #EF4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.6;
+      padding-bottom: 4rem;
+    }
+
+    header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .title-area h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFF 0%, var(--color-text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-area p {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .badge-vtu {
+      background: rgba(56, 161, 105, 0.1);
+      border: 1px solid var(--color-safe);
+      color: var(--color-safe);
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      color: var(--color-accent);
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: var(--color-text-secondary);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      background: var(--color-surface-2);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .badge-pk { background: rgba(229, 62, 62, 0.2); color: var(--color-primary); border: 1px solid var(--color-primary); }
+    .badge-fk { background: rgba(49, 130, 206, 0.2); color: var(--color-accent); border: 1px solid var(--color-accent); }
+    .badge-uq { background: rgba(214, 158, 46, 0.2); color: var(--color-warn); border: 1px solid var(--color-warn); }
+
+    .redundant-red {
+      background: rgba(229, 62, 62, 0.15) !important;
+      border: 1px solid var(--color-primary);
+    }
+    .redundant-warn {
+      background: rgba(214, 158, 46, 0.15) !important;
+      border: 1px solid var(--color-warn);
+    }
+
+    .highlight-box {
+      border-left: 4px solid var(--color-accent);
+      background: var(--color-surface-2);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+    }
+
+    /* Relational Schema Styling */
+    .schema-canvas {
+      width: 100%;
+      height: 520px;
+      background: #0B1120;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      margin-top: 1.5rem;
+    }
+
+    .schema-table {
+      fill: var(--color-surface-2);
+      stroke: var(--color-border);
+      stroke-width: 1.5;
+    }
+    .schema-header {
+      fill: #1E3A5F;
+    }
+    .schema-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      fill: var(--color-text-primary);
+    }
+    .schema-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      fill: white;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--color-accent);
+      color: white;
+      border-color: var(--color-accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      header, .nav-tabs, footer {
+        display: none !important;
+      }
+      .section-card {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        page-break-after: always;
+      }
+      .tab-content {
+        display: block !important;
+      }
+      table, th, td {
+        border-color: #ccc !important;
+        color: black !important;
+      }
+      th {
+        background: #f0f0f0 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-area">
+      <h1>STVMS — Database Normalization</h1>
+      <p>BMSIT&amp;M Mini Project — 4th Semester DBMS (CO4 Alignment)</p>
+    </div>
+    <div class="badge-vtu">CO4 — Normalization</div>
+  </header>
+
+  <div class="container">
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-unf')">UNF (Unnormalized)</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-1nf')">1NF (First Normal)</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-2nf')">2NF (Second Normal)</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-3nf')">3NF (Third Normal)</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-schema')">Schema Model</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-summary')">Summary Mapping</button>
+    </div>
+
+    <!-- UNF -->
+    <div id="tab-unf" class="tab-content active">
+      <div class="section-card">
+        <h2>Unnormalized Form (UNF)</h2>
+        <p>In UNF, all data columns are placed into a single flat structure `TRAFFIC_DATA`. This layout contains severe data redundancy and anomalies.</p>
+        
+        <div class="highlight-box">
+          <strong>Anomalies Present:</strong>
+          <ul>
+            <li class="redundant-red" style="padding: 0.25rem 0.5rem; margin-top: 0.25rem; border-radius: 4px;"><strong>Red Highlight (Redundant vehicle/owner data):</strong> Owner names, phone numbers, and emails are repeated for every single violation of the same vehicle.</li>
+            <li class="redundant-warn" style="padding: 0.25rem 0.5rem; margin-top: 0.25rem; border-radius: 4px;"><strong>Amber Highlight (Officer and Location detail redundancies):</strong> Officer details and location coordinates are repeated, instead of referencing unique keys.</li>
+          </ul>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>violation_id</th>
+                <th>vehicle_reg</th>
+                <th>owner_name</th>
+                <th>owner_phone</th>
+                <th>officer_badge</th>
+                <th>officer_name</th>
+                <th>location_name</th>
+                <th>lat / long</th>
+                <th>violation_type</th>
+                <th>base_fine</th>
+                <th>is_paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="redundant-red">
+                <td>VIO-001</td>
+                <td>KA-03-HA-1111</td>
+                <td>Ramesh Kumar</td>
+                <td>9845012345</td>
+                <td>OF-482</td>
+                <td>Constable Ravi</td>
+                <td>Silk Board</td>
+                <td>12.9172 / 77.6227</td>
+                <td>Signal Jump</td>
+                <td>1000</td>
+                <td>No</td>
+              </tr>
+              <tr class="redundant-red">
+                <td>VIO-002</td>
+                <td>KA-03-HA-1111</td>
+                <td>Ramesh Kumar</td>
+                <td>9845012345</td>
+                <td>OF-120</td>
+                <td>Constable Anjali</td>
+                <td>MG Road</td>
+                <td>12.9758 / 77.6066</td>
+                <td>Overspeeding</td>
+                <td>2000</td>
+                <td>Yes</td>
+              </tr>
+              <tr class="redundant-warn">
+                <td>VIO-003</td>
+                <td>KA-01-XX-9999</td>
+                <td>Sunita Sharma</td>
+                <td>9900223344</td>
+                <td>OF-482</td>
+                <td>Constable Ravi</td>
+                <td>Silk Board</td>
+                <td>12.9172 / 77.6227</td>
+                <td>No Helmet</td>
+                <td>500</td>
+                <td>No</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1NF -->
+    <div id="tab-1nf" class="tab-content">
+      <div class="section-card">
+        <h2>First Normal Form (1NF)</h2>
+        <p><strong>Rule:</strong> Atomic values (no repeating groups / multi-valued fields) and a designated Primary Key.</p>
+        
+        <div class="highlight-box">
+          <strong>1NF Change:</strong> In our system, the route coordinates for safe route searches could be stored as an array or JSON string. To satisfy 1NF, we extract route waypoints and searches into two structured tables (`ROUTE_SEARCHES` and a junction relationship table or structured schema) ensuring every column contains single, atomic values.
+        </div>
+
+        <p>All other fields in `TRAFFIC_DATA` are already atomic. The flat table remains, but now with a defined Primary Key `violation_id` + `vehicle_reg` + `officer_badge` composite key.</p>
+      </div>
+    </div>
+
+    <!-- 2NF -->
+    <div id="tab-2nf" class="tab-content">
+      <div class="section-card">
+        <h2>Second Normal Form (2NF)</h2>
+        <p><strong>Rule:</strong> Must be in 1NF, and all non-key attributes must show <strong>Full Functional Dependency</strong> on the primary key (no partial dependency).</p>
+        
+        <div class="highlight-box">
+          <strong>2NF Extraction:</strong> In 1NF, `owner_name` depends only on `vehicle_reg`, not the rest of the key. Similarly, `officer_name` depends only on `officer_badge`. We extract them into dedicated tables `VEHICLES` and `OFFICERS` to eliminate these partial dependencies.
+        </div>
+
+        <p>We split our design into distinct tables with single Primary Keys:</p>
+        <ul>
+          <li><strong>VEHICLES</strong> (<u>vehicle_id</u>, reg_number, owner_name, owner_phone, owner_email, vehicle_type, created_at)</li>
+          <li><strong>OFFICERS</strong> (<u>officer_id</u>, badge_number, name, zone, username, password_hash, created_at)</li>
+          <li><strong>VIOLATIONS</strong> (<u>violation_id</u>, vehicle_id, officer_id, location_id, type_id, violation_time, evidence_image_url, status, created_at)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3NF -->
+    <div id="tab-3nf" class="tab-content">
+      <div class="section-card">
+        <h2>Third Normal Form (3NF)</h2>
+        <p><strong>Rule:</strong> Must be in 2NF, and must have <strong>No Transitive Dependencies</strong> (non-key attributes should not depend on other non-key attributes).</p>
+        
+        <div class="highlight-box">
+          <strong>3NF Extraction:</strong> In the `VIOLATIONS` table, `base_fine` is determined by `violation_type` (which is a non-key attribute in the parent table). This is a transitive dependency: `violation_id` &rarr; `violation_type` &rarr; `base_fine`. We resolve this by extracting `VIOLATION_TYPES` into its own table, keeping only a foreign key reference inside `VIOLATIONS`.
+        </div>
+
+        <p>Our final 3NF schema consists of 7 completely independent, normalized tables:</p>
+        <ol style="margin-left: 2rem; margin-top: 0.5rem; color: var(--color-text-secondary);">
+          <li><strong>VEHICLES</strong>: Vehicle profiles & owner contact data.</li>
+          <li><strong>OFFICERS</strong>: Officer profile records and police credentials.</li>
+          <li><strong>LOCATIONS</strong>: Geolocation zones (Silk Board, MG Road, etc.).</li>
+          <li><strong>VIOLATION_TYPES</strong>: Violation categories and base fines (INR).</li>
+          <li><strong>VIOLATIONS</strong>: Logged violation events (Central Fact Table).</li>
+          <li><strong>FINES</strong>: Invoicing and collection records (1:1 with violations).</li>
+          <li><strong>ROUTE_SEARCHES</strong>: Geolocation risk search log.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- SCHEMA MODEL -->
+    <div id="tab-schema" class="tab-content">
+      <div class="section-card">
+        <h2>Normalized Relational Schema (3NF)</h2>
+        <p>The diagram below displays the relational architecture of STVMS. It models the PK-FK relationships, column data types, and constraints.</p>
+        
+        <div class="schema-canvas">
+          <svg viewBox="0 0 1000 520" width="100%" height="100%">
+            <!-- Table: VEHICLES -->
+            <g transform="translate(30, 30)">
+              <rect class="schema-table" width="200" height="150" rx="6" />
+              <rect class="schema-header" width="200" height="30" rx="6" />
+              <text class="schema-title" x="10" y="20">VEHICLES</text>
+              <text class="schema-text" x="10" y="50"><tspan fill="#F59E0B">🔑 vehicle_id</tspan> : VARCHAR(36) [PK]</text>
+              <text class="schema-text" x="10" y="70"><tspan fill="#10B981">✨ reg_number</tspan> : VARCHAR(15) [UQ]</text>
+              <text class="schema-text" x="10" y="90">owner_name : VARCHAR(100)</text>
+              <text class="schema-text" x="10" y="110">owner_phone : VARCHAR(15)</text>
+              <text class="schema-text" x="10" y="130">vehicle_type : ENUM</text>
+            </g>
+
+            <!-- Table: OFFICERS -->
+            <g transform="translate(30, 220)">
+              <rect class="schema-table" width="200" height="130" rx="6" />
+              <rect class="schema-header" width="200" height="30" rx="6" />
+              <text class="schema-title" x="10" y="20">OFFICERS</text>
+              <text class="schema-text" x="10" y="50"><tspan fill="#F59E0B">🔑 officer_id</tspan> : VARCHAR(36) [PK]</text>
+              <text class="schema-text" x="10" y="70"><tspan fill="#10B981">✨ badge_number</tspan> : VARCHAR(15) [UQ]</text>
+              <text class="schema-text" x="10" y="90">name : VARCHAR(100)</text>
+              <text class="schema-text" x="10" y="110">zone : VARCHAR(50)</text>
+            </g>
+
+            <!-- Table: VIOLATIONS -->
+            <g transform="translate(400, 120)">
+              <rect class="schema-table" width="200" height="210" rx="6" />
+              <rect class="schema-header" width="200" height="30" rx="6" style="fill: #851C1C;"></rect>
+              <text class="schema-title" x="10" y="20">VIOLATIONS (Fact)</text>
+              <text class="schema-text" x="10" y="50"><tspan fill="#F59E0B">🔑 violation_id</tspan> : VARCHAR(36) [PK]</text>
+              <text class="schema-text" x="10" y="80"><tspan fill="#3B82F6">🔗 vehicle_id</tspan> : VARCHAR(36) [FK]</text>
+              <text class="schema-text" x="10" y="100"><tspan fill="#3B82F6">🔗 officer_id</tspan> : VARCHAR(36) [FK]</text>
+              <text class="schema-text" x="10" y="120"><tspan fill="#3B82F6">🔗 location_id</tspan> : VARCHAR(36) [FK]</text>
+              <text class="schema-text" x="10" y="140"><tspan fill="#3B82F6">🔗 type_id</tspan> : VARCHAR(36) [FK]</text>
+              <text class="schema-text" x="10" y="170">violation_time : DATETIME</text>
+              <text class="schema-text" x="10" y="190">status : ENUM</text>
+            </g>
+
+            <!-- Table: FINES -->
+            <g transform="translate(760, 120)">
+              <rect class="schema-table" width="200" height="150" rx="6" />
+              <rect class="schema-header" width="200" height="30" rx="6" />
+              <text class="schema-title" x="10" y="20">FINES</text>
+              <text class="schema-text" x="10" y="50"><tspan fill="#F59E0B">🔑 fine_id</tspan> : VARCHAR(36) [PK]</text>
+              <text class="schema-text" x="10" y="80"><tspan fill="#3B82F6">🔗 violation_id</tspan> : VARCHAR(36) [FK, UQ]</text>
+              <text class="schema-text" x="10" y="100">amount : DECIMAL(10,2)</text>
+              <text class="schema-text" x="10" y="120">due_date : DATE</text>
+              <text class="schema-text" x="10" y="140">is_paid : BOOLEAN</text>
+            </g>
+
+            <!-- Table: LOCATIONS -->
+            <g transform="translate(30, 380)">
+              <rect class="schema-table" width="200" height="110" rx="6" />
+              <rect class="schema-header" width="200" height="30" rx="6" />
+              <text class="schema-title" x="10" y="20">LOCATIONS</text>
+              <text class="schema-text" x="10" y="50"><tspan fill="#F59E0B">🔑 location_id</tspan> : VARCHAR(36) [PK]</text>
+              <text class="schema-text" x="10" y="70">name : VARCHAR(100)</text>
+              <text class="schema-text" x="10" y="90">zone : VARCHAR(50)</text>
+            </g>
+
+            <!-- Table: VIOLATION_TYPES -->
+            <g transform="translate(760, 340)">
+              <rect class="schema-table" width="200" height="110" rx="6" />
+              <rect class="schema-header" width="200" height="30" rx="6" />
+              <text class="schema-title" x="10" y="20">VIOLATION_TYPES</text>
+              <text class="schema-text" x="10" y="50"><tspan fill="#F59E0B">🔑 type_id</tspan> : VARCHAR(36) [PK]</text>
+              <text class="schema-text" x="10" y="70">name : VARCHAR(100)</text>
+              <text class="schema-text" x="10" y="90">base_fine : DECIMAL(10,2)</text>
+            </g>
+
+            <!-- Relationship Lines (PK/FK connections) -->
+            <!-- VEHICLES -> VIOLATIONS -->
+            <path d="M 230 105 L 320 105 L 320 190 L 400 190" fill="none" stroke="#3182CE" stroke-width="1.5" />
+            <!-- OFFICERS -> VIOLATIONS -->
+            <path d="M 230 285 L 350 285 L 350 210 L 400 210" fill="none" stroke="#3182CE" stroke-width="1.5" />
+            <!-- LOCATIONS -> VIOLATIONS -->
+            <path d="M 230 435 L 350 435 L 350 230 L 400 230" fill="none" stroke="#3182CE" stroke-width="1.5" />
+            <!-- VIOLATION_TYPES -> VIOLATIONS -->
+            <path d="M 760 395 L 680 395 L 680 250 L 600 250" fill="none" stroke="#3182CE" stroke-width="1.5" />
+            <!-- VIOLATIONS -> FINES -->
+            <path d="M 600 190 L 760 190" fill="none" stroke="#E53E3E" stroke-width="2" stroke-dasharray="3,3" />
+
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div id="tab-summary" class="tab-content">
+      <div class="section-card">
+        <h2>Normalization Summary</h2>
+        <p>This table maps redundancies detected in the Unnormalized Form (UNF) to their formal database design resolutions.</p>
+        
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Original Redundancy Issue (UNF)</th>
+                <th>Violation Level</th>
+                <th>Resolution Strategy</th>
+                <th>Final Target Table</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Owner name & phone repeated for every violation.</td>
+                <td>2NF (Partial Dependency)</td>
+                <td>Extract into a single vehicle profiles table. Reference via foreign key `vehicle_id`.</td>
+                <td><code>vehicles</code></td>
+              </tr>
+              <tr>
+                <td>Officer names & login details repeated.</td>
+                <td>2NF (Partial Dependency)</td>
+                <td>Extract to accounts metadata store. Reference via `officer_id`.</td>
+                <td><code>officers</code></td>
+              </tr>
+              <tr>
+                <td>Coordinates & location zones replicated across records.</td>
+                <td>2NF (Partial Dependency)</td>
+                <td>Group geocodes and locations. Reference via `location_id`.</td>
+                <td><code>locations</code></td>
+              </tr>
+              <tr>
+                <td>Base fine mapping duplicated on individual violations.</td>
+                <td>3NF (Transitive Dependency)</td>
+                <td>Extract to catalog table mapping violation type name &rarr; base fine value. Reference via `type_id`.</td>
+                <td><code>violation_types</code></td>
+              </tr>
+              <tr>
+                <td>Multiple route waypoint coordinates stored inside route searches array.</td>
+                <td>1NF (Repeating Groups)</td>
+                <td>Store route nodes in normalized sub-array structure or related entries.</td>
+                <td><code>route_searches</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(evt, tabId) {
+      // Hide all tabs
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      // Deactivate all buttons
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      tabBtns.forEach(btn => btn.classList.remove('active'));
+
+      // Show current tab & activate button
+      document.getElementById(tabId).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+  </script>
+</body>
+</html>

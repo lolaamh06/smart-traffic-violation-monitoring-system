@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STVMS — ER Diagram (Chen Notation)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #0B1120;
+      --color-surface: #141E30;
+      --color-surface-2: #1C2A40;
+      --color-border: #1E3A5F;
+      --color-primary: #E53E3E;
+      --color-accent: #3182CE;
+      --color-warn: #D69E2E;
+      --color-safe: #38A169;
+      --color-text-primary: #E2E8F0;
+      --color-text-secondary: #718096;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-area h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #FFF 0%, var(--color-text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-area p {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .badge-vtu {
+      background: rgba(49, 130, 206, 0.1);
+      border: 1px solid var(--color-accent);
+      color: var(--color-accent);
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 10;
+      background: rgba(20, 30, 48, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .control-btn {
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+      padding: 0.375rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.825rem;
+      transition: all 0.2s;
+    }
+
+    .control-btn:hover {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      cursor: grab;
+      min-height: 700px;
+    }
+
+    .canvas-container:active {
+      cursor: grabbing;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      user-select: none;
+    }
+
+    /* ER Shapes Style */
+    .entity {
+      fill: var(--color-surface);
+      stroke: var(--color-accent);
+      stroke-width: 2.5;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .entity-inner {
+      fill: none;
+      stroke: var(--color-accent);
+      stroke-width: 1.5;
+    }
+
+    .relationship {
+      fill: var(--color-surface-2);
+      stroke: var(--color-warn);
+      stroke-width: 2.5;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .attribute {
+      fill: #0B1120;
+      stroke: var(--color-text-secondary);
+      stroke-width: 1.5;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .attribute-pk {
+      stroke: var(--color-primary);
+      stroke-width: 2;
+    }
+
+    .connector {
+      stroke: var(--color-border);
+      stroke-width: 1.5;
+      fill: none;
+      transition: stroke 0.3s, stroke-width 0.3s;
+    }
+
+    .text-label {
+      fill: var(--color-text-primary);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .text-attribute {
+      fill: var(--color-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      font-size: 11px;
+      pointer-events: none;
+    }
+    .text-attribute-pk {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .text-cardinality {
+      fill: var(--color-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    /* Highlighting classes */
+    .highlighted {
+      stroke-width: 3.5 !important;
+      filter: drop-shadow(0 0 6px rgba(49, 130, 206, 0.8));
+    }
+    .relationship.highlighted {
+      filter: drop-shadow(0 0 6px rgba(214, 158, 46, 0.8));
+    }
+    .attribute.highlighted {
+      filter: drop-shadow(0 0 4px rgba(226, 232, 240, 0.6));
+    }
+    .connector.highlighted {
+      stroke: var(--color-accent) !important;
+      stroke-width: 2.5 !important;
+    }
+    .dimmed {
+      opacity: 0.15;
+    }
+
+    legend {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 1rem;
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.825rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .legend-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+    }
+
+    footer {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: 1rem 2rem;
+      font-size: 0.825rem;
+      color: var(--color-text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      header, .control-panel, legend, footer {
+        display: none !important;
+      }
+      .canvas-container {
+        overflow: visible !important;
+      }
+      svg {
+        width: 100% !important;
+        height: auto !important;
+      }
+      .entity, .relationship, .attribute, .connector {
+        stroke: black !important;
+        fill: white !important;
+      }
+      .text-label, .text-attribute, .text-cardinality {
+        fill: black !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-area">
+      <h1>STVMS — Entity Relationship Diagram</h1>
+      <p>BMSIT&amp;M Mini Project — 4th Semester DBMS (SDG 9: Target 9.5)</p>
+    </div>
+    <div class="badge-vtu">CO2 Alignment</div>
+  </header>
+
+  <div class="main-container">
+    <div class="control-panel">
+      <span style="font-size: 0.875rem; font-weight: 500;">Interactive Controls:</span>
+      <button class="control-btn" onclick="resetHighlight()">Reset Highlight</button>
+      <button class="control-btn" onclick="window.print()">Print Diagram</button>
+      <span style="font-size: 0.75rem; color: var(--color-text-secondary);">Hover entities/relationships to focus connected elements.</span>
+    </div>
+
+    <div class="canvas-container" id="canvas-container">
+      <svg id="er-svg" viewBox="0 0 1600 1100" width="1600" height="1100">
+        <!-- Grid Pattern (visual texture) -->
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(30, 58, 95, 0.15)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ==================== CONNECTIONS (LINES) ==================== -->
+        <!-- Connectors: Vehicles -> Involves -> Violations -->
+        <line class="connector group-vehicles group-violations" x1="300" y1="200" x2="550" y2="375" id="c-veh-inv" />
+        <line class="connector group-violations group-vehicles" x1="550" y1="375" x2="800" y2="550" id="c-inv-vio" />
+        
+        <!-- Connectors: Officers -> Commits -> Violations -->
+        <line class="connector group-officers group-violations" x1="1300" y1="200" x2="1050" y2="375" id="c-off-com" />
+        <line class="connector group-violations group-officers" x1="1050" y1="375" x2="800" y2="550" id="c-com-vio" />
+
+        <!-- Connectors: Locations -> Occurs At -> Violations -->
+        <line class="connector group-locations group-violations" x1="300" y1="900" x2="550" y2="725" id="c-loc-occ" />
+        <line class="connector group-violations group-locations" x1="550" y1="725" x2="800" y2="550" id="c-occ-vio" />
+
+        <!-- Connectors: Violation Types -> Is Of Type -> Violations -->
+        <line class="connector group-types group-violations" x1="1300" y1="900" x2="1050" y2="725" id="c-type-iot" />
+        <line class="connector group-violations group-types" x1="1050" y1="725" x2="800" y2="550" id="c-iot-vio" />
+
+        <!-- Connectors: Violations -> Generates -> Fines -->
+        <line class="connector group-violations group-fines" x1="800" y1="550" x2="950" y2="550" id="c-vio-gen" />
+        <line class="connector group-fines group-violations" x1="950" y1="550" x2="1100" y2="550" id="c-gen-fin" />
+
+        <!-- Connectors: Route Searches -> Passes Through -> Locations -->
+        <line class="connector group-searches group-locations" x1="800" y1="900" x2="550" y2="900" id="c-sea-pas" />
+        <line class="connector group-locations group-searches" x1="550" y1="900" x2="300" y2="900" id="c-pas-loc" />
+
+        <!-- VEHICLES Attribute connectors -->
+        <line class="connector group-vehicles" x1="300" y1="200" x2="150" y2="120" />
+        <line class="connector group-vehicles" x1="300" y1="200" x2="250" y2="100" />
+        <line class="connector group-vehicles" x1="300" y1="200" x2="350" y2="100" />
+        <line class="connector group-vehicles" x1="300" y1="200" x2="450" y2="120" />
+        <line class="connector group-vehicles" x1="300" y1="200" x2="150" y2="280" />
+        <line class="connector group-vehicles" x1="300" y1="200" x2="450" y2="280" />
+
+        <!-- OFFICERS Attribute connectors -->
+        <line class="connector group-officers" x1="1300" y1="200" x2="1150" y2="120" />
+        <line class="connector group-officers" x1="1300" y1="200" x2="1250" y2="100" />
+        <line class="connector group-officers" x1="1300" y1="200" x2="1350" y2="100" />
+        <line class="connector group-officers" x1="1300" y1="200" x2="1450" y2="120" />
+        <line class="connector group-officers" x1="1300" y1="200" x2="1150" y2="280" />
+        <line class="connector group-officers" x1="1300" y1="200" x2="1450" y2="280" />
+
+        <!-- LOCATIONS Attribute connectors -->
+        <line class="connector group-locations" x1="300" y1="900" x2="150" y2="820" />
+        <line class="connector group-locations" x1="300" y1="900" x2="250" y2="800" />
+        <line class="connector group-locations" x1="300" y1="900" x2="350" y2="800" />
+        <line class="connector group-locations" x1="300" y1="900" x2="450" y2="820" />
+        <line class="connector group-locations" x1="300" y1="900" x2="150" y2="980" />
+
+        <!-- VIOLATION_TYPES Attribute connectors -->
+        <line class="connector group-types" x1="1300" y1="900" x2="1180" y2="820" />
+        <line class="connector group-types" x1="1300" y1="900" x2="1300" y2="800" />
+        <line class="connector group-types" x1="1300" y1="900" x2="1420" y2="820" />
+
+        <!-- VIOLATIONS Attribute connectors -->
+        <line class="connector group-violations" x1="800" y1="550" x2="680" y2="470" />
+        <line class="connector group-violations" x1="800" y1="550" x2="800" y2="440" />
+        <line class="connector group-violations" x1="800" y1="550" x2="920" y2="470" />
+        <line class="connector group-violations" x1="800" y1="550" x2="680" y2="630" />
+
+        <!-- FINES Attribute connectors -->
+        <line class="connector group-fines" x1="1100" y1="550" x2="1100" y2="440" />
+        <line class="connector group-fines" x1="1100" y1="550" x2="1220" y2="470" />
+        <line class="connector group-fines" x1="1100" y1="550" x2="1240" y2="550" />
+        <line class="connector group-fines" x1="1100" y1="550" x2="1220" y2="630" />
+        <line class="connector group-fines" x1="1100" y1="550" x2="1100" y2="660" />
+
+        <!-- ROUTE_SEARCHES Attribute connectors -->
+        <line class="connector group-searches" x1="800" y1="900" x2="700" y2="980" />
+        <line class="connector group-searches" x1="800" y1="900" x2="800" y2="1000" />
+        <line class="connector group-searches" x1="800" y1="900" x2="900" y2="980" />
+
+        <!-- PASSES_THROUGH Attribute connector (riskScore on relationship) -->
+        <line class="connector group-searches group-locations" x1="550" y1="900" x2="550" y2="980" />
+
+        <!-- ==================== RELATIONSHIP SHAPES ==================== -->
+        <!-- INVOLVES -->
+        <polygon class="relationship group-vehicles group-violations" points="550,345 595,375 550,405 505,375" id="rel-involves" />
+        <text class="text-label" x="550" y="375">INVOLVES</text>
+
+        <!-- COMMITS -->
+        <polygon class="relationship group-officers group-violations" points="1050,345 1095,375 1050,405 1005,375" id="rel-commits" />
+        <text class="text-label" x="1050" y="375">COMMITS</text>
+
+        <!-- OCCURS_AT -->
+        <polygon class="relationship group-locations group-violations" points="550,695 595,725 550,755 505,725" id="rel-occurs-at" />
+        <text class="text-label" x="550" y="725" style="font-size: 11px;">OCCURS_AT</text>
+
+        <!-- IS_OF_TYPE -->
+        <polygon class="relationship group-types group-violations" points="1050,695 1095,725 1050,755 1005,725" id="rel-is-of-type" />
+        <text class="text-label" x="1050" y="725" style="font-size: 11px;">IS_OF_TYPE</text>
+
+        <!-- GENERATES -->
+        <polygon class="relationship group-violations group-fines" points="950,520 995,550 950,580 905,550" id="rel-generates" />
+        <text class="text-label" x="950" y="550" style="font-size: 10px;">GENERATES</text>
+
+        <!-- PASSES_THROUGH -->
+        <polygon class="relationship group-searches group-locations" points="550,870 595,900 550,930 505,900" id="rel-passes-through" />
+        <text class="text-label" x="550" y="900" style="font-size: 10px;">PASSES_THROUGH</text>
+
+
+        <!-- ==================== ENTITY SHAPES ==================== -->
+        <!-- VEHICLES -->
+        <g id="ent-vehicles" class="group-vehicles">
+          <rect class="entity" x="220" y="170" width="160" height="60" rx="4" />
+          <rect class="entity-inner" x="224" y="174" width="152" height="52" rx="2" />
+          <text class="text-label" x="300" y="200">VEHICLES</text>
+        </g>
+
+        <!-- OFFICERS -->
+        <g id="ent-officers" class="group-officers">
+          <rect class="entity" x="1220" y="170" width="160" height="60" rx="4" />
+          <rect class="entity-inner" x="1224" y="174" width="152" height="52" rx="2" />
+          <text class="text-label" x="1300" y="200">OFFICERS</text>
+        </g>
+
+        <!-- LOCATIONS -->
+        <g id="ent-locations" class="group-locations">
+          <rect class="entity" x="220" y="870" width="160" height="60" rx="4" />
+          <rect class="entity-inner" x="224" y="874" width="152" height="52" rx="2" />
+          <text class="text-label" x="300" y="900">LOCATIONS</text>
+        </g>
+
+        <!-- VIOLATION_TYPES -->
+        <g id="ent-types" class="group-types">
+          <rect class="entity" x="1220" y="870" width="160" height="60" rx="4" />
+          <rect class="entity-inner" x="1224" y="874" width="152" height="52" rx="2" />
+          <text class="text-label" x="1300" y="900">VIOLATION_TYPES</text>
+        </g>
+
+        <!-- VIOLATIONS -->
+        <g id="ent-violations" class="group-violations">
+          <rect class="entity" x="720" y="520" width="160" height="60" rx="4" />
+          <rect class="entity-inner" x="724" y="524" width="152" height="52" rx="2" />
+          <text class="text-label" x="800" y="550">VIOLATIONS</text>
+        </g>
+
+        <!-- FINES (Weak Entity - drawn with double border) -->
+        <g id="ent-fines" class="group-fines">
+          <rect class="entity" x="1020" y="520" width="160" height="60" rx="4" style="stroke: var(--color-primary);" />
+          <rect class="entity-inner" x="1024" y="524" width="152" height="52" rx="2" style="stroke: var(--color-primary);" />
+          <text class="text-label" x="1100" y="550">FINES</text>
+        </g>
+
+        <!-- ROUTE_SEARCHES -->
+        <g id="ent-searches" class="group-searches">
+          <rect class="entity" x="720" y="870" width="160" height="60" rx="4" />
+          <rect class="entity-inner" x="724" y="874" width="152" height="52" rx="2" />
+          <text class="text-label" x="800" y="900">ROUTE_SEARCHES</text>
+        </g>
+
+
+        <!-- ==================== ATTRIBUTE SHAPES ==================== -->
+        <!-- VEHICLES Attributes -->
+        <ellipse class="attribute attribute-pk group-vehicles" cx="150" cy="120" rx="60" ry="25" />
+        <text class="text-attribute text-attribute-pk" x="150" y="120">vehicle_id</text>
+
+        <ellipse class="attribute group-vehicles" cx="250" cy="100" rx="55" ry="25" />
+        <text class="text-attribute" x="250" y="100">reg_number</text>
+
+        <ellipse class="attribute group-vehicles" cx="350" cy="100" rx="55" ry="25" />
+        <text class="text-attribute" x="350" y="100">owner_name</text>
+
+        <ellipse class="attribute group-vehicles" cx="450" cy="120" rx="55" ry="25" />
+        <text class="text-attribute" x="450" y="120">owner_phone</text>
+
+        <ellipse class="attribute group-vehicles" cx="150" cy="280" rx="55" ry="25" />
+        <text class="text-attribute" x="150" y="280">owner_email</text>
+
+        <ellipse class="attribute group-vehicles" cx="450" cy="280" rx="55" ry="25" />
+        <text class="text-attribute" x="450" y="280">vehicle_type</text>
+
+        <!-- OFFICERS Attributes -->
+        <ellipse class="attribute attribute-pk group-officers" cx="1150" cy="120" rx="60" ry="25" />
+        <text class="text-attribute text-attribute-pk" x="1150" y="120">officer_id</text>
+
+        <ellipse class="attribute group-officers" cx="1250" cy="100" rx="55" ry="25" />
+        <text class="text-attribute" x="1250" y="100">badge_number</text>
+
+        <ellipse class="attribute group-officers" cx="1350" cy="100" rx="55" ry="25" />
+        <text class="text-attribute" x="1350" y="100">name</text>
+
+        <ellipse class="attribute group-officers" cx="1450" cy="120" rx="55" ry="25" />
+        <text class="text-attribute" x="1450" y="120">zone</text>
+
+        <ellipse class="attribute group-officers" cx="1150" cy="280" rx="55" ry="25" />
+        <text class="text-attribute" x="1150" y="280">username</text>
+
+        <ellipse class="attribute group-officers" cx="1450" cy="280" rx="60" ry="25" />
+        <text class="text-attribute" x="1450" y="280">password_hash</text>
+
+        <!-- LOCATIONS Attributes -->
+        <ellipse class="attribute attribute-pk group-locations" cx="150" cy="820" rx="60" ry="25" />
+        <text class="text-attribute text-attribute-pk" x="150" y="820">location_id</text>
+
+        <ellipse class="attribute group-locations" cx="250" cy="800" rx="55" ry="25" />
+        <text class="text-attribute" x="250" y="800">name</text>
+
+        <ellipse class="attribute group-locations" cx="350" cy="800" rx="55" ry="25" />
+        <text class="text-attribute" x="350" y="800">latitude</text>
+
+        <ellipse class="attribute group-locations" cx="450" cy="820" rx="55" ry="25" />
+        <text class="text-attribute" x="450" y="820">longitude</text>
+
+        <ellipse class="attribute group-locations" cx="150" cy="980" rx="55" ry="25" />
+        <text class="text-attribute" x="150" y="980">zone</text>
+
+        <!-- VIOLATION_TYPES Attributes -->
+        <ellipse class="attribute attribute-pk group-types" cx="1180" cy="820" rx="60" ry="25" />
+        <text class="text-attribute text-attribute-pk" x="1180" y="820">type_id</text>
+
+        <ellipse class="attribute group-types" cx="1300" cy="800" rx="55" ry="25" />
+        <text class="text-attribute" x="1300" y="800">name</text>
+
+        <ellipse class="attribute group-types" cx="1420" cy="820" rx="55" ry="25" />
+        <text class="text-attribute" x="1420" y="820">base_fine</text>
+
+        <!-- VIOLATIONS Attributes -->
+        <ellipse class="attribute attribute-pk group-violations" cx="800" cy="440" rx="60" ry="25" />
+        <text class="text-attribute text-attribute-pk" x="800" y="440">violation_id</text>
+
+        <ellipse class="attribute group-violations" cx="680" cy="470" rx="55" ry="25" />
+        <text class="text-attribute" x="680" y="470">violation_time</text>
+
+        <ellipse class="attribute group-violations" cx="920" cy="470" rx="60" ry="25" style="stroke-dasharray: 4;" />
+        <text class="text-attribute" x="920" y="470">evidence_url</text>
+
+        <ellipse class="attribute group-violations" cx="680" cy="630" rx="55" ry="25" />
+        <text class="text-attribute" x="680" y="630">status</text>
+
+        <!-- FINES Attributes -->
+        <ellipse class="attribute attribute-pk group-fines" cx="1100" cy="440" rx="55" ry="25" />
+        <text class="text-attribute text-attribute-pk" x="1100" y="440">fine_id</text>
+
+        <ellipse class="attribute group-fines" cx="1220" cy="470" rx="55" ry="25" />
+        <text class="text-attribute" x="1220" y="470">amount</text>
+
+        <ellipse class="attribute group-fines" cx="1240" cy="550" rx="55" ry="25" />
+        <text class="text-attribute" x="1240" y="550">due_date</text>
+
+        <ellipse class="attribute group-fines" cx="1220" cy="630" rx="55" ry="25" />
+        <text class="text-attribute" x="1220" y="630">paid_at</text>
+
+        <ellipse class="attribute group-fines" cx="1100" cy="660" rx="55" ry="25" />
+        <text class="text-attribute" x="1100" y="660">payment_method</text>
+
+        <!-- ROUTE_SEARCHES Attributes -->
+        <ellipse class="attribute attribute-pk group-searches" cx="700" cy="980" rx="60" ry="25" />
+        <text class="text-attribute text-attribute-pk" x="700" y="980">search_id</text>
+
+        <ellipse class="attribute group-searches" cx="800" cy="1000" rx="55" ry="25" />
+        <text class="text-attribute" x="800" y="1000">start_point</text>
+
+        <ellipse class="attribute group-searches" cx="900" cy="980" rx="55" ry="25" />
+        <text class="text-attribute" x="900" y="980">end_point</text>
+
+        <!-- PASSES_THROUGH Attributes (on relationship) -->
+        <ellipse class="attribute group-searches group-locations" cx="550" cy="980" rx="55" ry="25" style="stroke-dasharray: 4;" />
+        <text class="text-attribute" x="550" y="980">risk_score</text>
+
+
+        <!-- ==================== CARDINALITY LABELS ==================== -->
+        <!-- VEHICLES (1) - INVOLVES - VIOLATIONS (N) -->
+        <text class="text-cardinality" x="330" y="250">1</text>
+        <text class="text-cardinality" x="750" y="500">N</text>
+
+        <!-- OFFICERS (1) - COMMITS - VIOLATIONS (N) -->
+        <text class="text-cardinality" x="1260" y="250">1</text>
+        <text class="text-cardinality" x="850" y="500">N</text>
+
+        <!-- LOCATIONS (1) - OCCURS_AT - VIOLATIONS (N) -->
+        <text class="text-cardinality" x="330" y="850">1</text>
+        <text class="text-cardinality" x="750" y="600">N</text>
+
+        <!-- VIOLATION_TYPES (1) - IS_OF_TYPE - VIOLATIONS (N) -->
+        <text class="text-cardinality" x="1260" y="850">1</text>
+        <text class="text-cardinality" x="850" y="600">N</text>
+
+        <!-- VIOLATIONS (1) - GENERATES - FINES (1) -->
+        <text class="text-cardinality" x="870" y="535">1</text>
+        <text class="text-cardinality" x="1035" y="535">1</text>
+
+        <!-- ROUTE_SEARCHES (M) - PASSES_THROUGH - LOCATIONS (N) -->
+        <text class="text-cardinality" x="710" y="920">M</text>
+        <text class="text-cardinality" x="390" y="920">N</text>
+
+      </svg>
+    </div>
+
+    <legend>
+      <div style="font-weight: 700; margin-bottom: 0.25rem; font-family: 'Space Grotesk', sans-serif;">Chen ER Legend</div>
+      <div class="legend-item">
+        <div class="legend-box" style="background: var(--color-surface); border: 2px solid var(--color-accent);"></div>
+        <span>Strong Entity</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="background: var(--color-surface); border: 2px double var(--color-primary); height: 18px; width: 18px;"></div>
+        <span>Weak Entity (1:1 with Fact)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="background: var(--color-surface-2); border: 2px solid var(--color-warn); transform: rotate(45deg); width: 12px; height: 12px; margin-left: 2px;"></div>
+        <span style="margin-left: 4px;">Relationship</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="border: 1.5px solid var(--color-text-secondary);"></div>
+        <span>Key / Normal Attribute</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="border: 1.5px dashed var(--color-text-secondary);"></div>
+        <span>Derived/Multivalued Attribute</span>
+      </div>
+    </legend>
+  </div>
+
+  <footer>
+    <div>SDG 9 — Industry, Innovation and Infrastructure</div>
+    <div>BMSIT &amp; M DBMS Mini Project — Team 2</div>
+  </footer>
+
+  <script>
+    const svg = document.getElementById('er-svg');
+    const entities = document.querySelectorAll('.entity, .relationship, .attribute');
+
+    // Add interactivity to hover group elements
+    entities.forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        // Find which group this element belongs to
+        const classes = Array.from(element.classList);
+        const groups = classes.filter(c => c.startsWith('group-'));
+        
+        if (groups.length === 0) return;
+
+        // Dim everything
+        document.querySelectorAll('.entity, .relationship, .attribute, .connector').forEach(el => {
+          el.classList.add('dimmed');
+        });
+
+        // Highlight matching elements
+        groups.forEach(group => {
+          document.querySelectorAll('.' + group).forEach(el => {
+            el.classList.remove('dimmed');
+            el.classList.add('highlighted');
+          });
+        });
+      });
+
+      element.addEventListener('mouseleave', resetHighlight);
+    });
+
+    function resetHighlight() {
+      document.querySelectorAll('.entity, .relationship, .attribute, .connector').forEach(el => {
+        el.classList.remove('dimmed', 'highlighted');
+      });
+    }
+
+    // Double-check print trigger or canvas dragging
+    let isDragging = false;
+    let startX, startY, scrollLeft, scrollTop;
+    const container = document.getElementById('canvas-container');
+
+    container.addEventListener('mousedown', (e) => {
+      if (e.target.tagName === 'svg' || e.target.id === 'canvas-container') {
+        isDragging = true;
+        startX = e.pageX - container.offsetLeft;
+        startY = e.pageY - container.offsetTop;
+        scrollLeft = container.scrollLeft;
+        scrollTop = container.scrollTop;
+      }
+    });
+
+    container.addEventListener('mouseleave', () => { isDragging = false; });
+    container.addEventListener('mouseup', () => { isDragging = false; });
+
+    container.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const y = e.pageY - container.offsetTop;
+      const walkX = (x - startX) * 1.5;
+      const walkY = (y - startY) * 1.5;
+      container.scrollLeft = scrollLeft - walkX;
+      container.scrollTop = scrollTop - walkY;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STVMS — SQL &amp; Firestore Queries Catalog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <!-- Highlight.js for Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
+  <style>
+    :root {
+      --color-bg: #0B1120;
+      --color-surface: #141E30;
+      --color-surface-2: #1C2A40;
+      --color-border: #1E3A5F;
+      --color-primary: #E53E3E;
+      --color-accent: #3182CE;
+      --color-warn: #D69E2E;
+      --color-safe: #38A169;
+      --color-text-primary: #E2E8F0;
+      --color-text-secondary: #718096;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      padding-bottom: 5rem;
+    }
+
+    header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .title-area h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFF 0%, var(--color-text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-area p {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .badge-vtu {
+      background: rgba(49, 130, 206, 0.1);
+      border: 1px solid var(--color-accent);
+      color: var(--color-accent);
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .collapsible-section {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .collapsible-trigger {
+      padding: 1rem 1.5rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--color-surface-2);
+      user-select: none;
+    }
+
+    .collapsible-content {
+      padding: 1.5rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .query-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .query-header {
+      background: var(--color-surface-2);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .query-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--color-text-primary);
+    }
+
+    .query-purpose {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      border-bottom: 1px solid var(--color-border);
+      background: rgba(20, 30, 48, 0.5);
+    }
+
+    .query-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    @media (max-width: 900px) {
+      .query-grid {
+        grid-template-columns: 1fr;
+      }
+      .code-col:first-child {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+      }
+    }
+
+    .code-col {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .code-col:first-child {
+      border-right: 1px solid var(--color-border);
+    }
+
+    .code-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.825rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    pre {
+      margin: 0;
+      border-radius: 6px;
+      overflow: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.825rem;
+      background: #090e18 !important;
+      flex: 1;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: none !important;
+      padding: 0 !important;
+    }
+
+    .query-note {
+      padding: 1rem 1.5rem;
+      font-size: 0.825rem;
+      color: var(--color-text-secondary);
+      background: rgba(49, 130, 206, 0.05);
+      border-left: 4px solid var(--color-accent);
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      header, .collapsible-section, footer {
+        display: none !important;
+      }
+      .query-card {
+        page-break-inside: avoid;
+        border: 1px solid #ccc;
+        box-shadow: none;
+        margin-bottom: 3rem;
+      }
+      pre {
+        background: white !important;
+        border: 1px solid #ccc;
+      }
+      code {
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-area">
+      <h1>STVMS — Query Catalog (SQL &amp; NoSQL)</h1>
+      <p>BMSIT&amp;M Mini Project — 4th Semester DBMS (CO3 Alignment)</p>
+    </div>
+    <div class="badge-vtu">CO3 — SQL Queries</div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Schema Tables (Collapsible) -->
+    <div class="collapsible-section">
+      <div class="collapsible-trigger" onclick="toggleCollapsible(this)">
+        <span>MySQL Schema Definition (CREATE TABLE DDL)</span>
+        <span class="arrow">&#9662;</span>
+      </div>
+      <div class="collapsible-content" style="display: none;">
+        <pre><code class="language-sql">-- 1. VEHICLES Table
+CREATE TABLE vehicles (
+  vehicle_id VARCHAR(36) PRIMARY KEY,
+  reg_number VARCHAR(15) UNIQUE NOT NULL,
+  owner_name VARCHAR(100) NOT NULL,
+  owner_phone VARCHAR(15) NOT NULL,
+  owner_email VARCHAR(100),
+  vehicle_type ENUM('Car', 'Bike', 'Truck', 'Auto', 'Bus') NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. OFFICERS Table
+CREATE TABLE officers (
+  officer_id VARCHAR(36) PRIMARY KEY,
+  badge_number VARCHAR(15) UNIQUE NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  zone VARCHAR(50) NOT NULL,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. LOCATIONS Table
+CREATE TABLE locations (
+  location_id VARCHAR(36) PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  latitude DECIMAL(9,6) NOT NULL,
+  longitude DECIMAL(9,6) NOT NULL,
+  zone VARCHAR(50) NOT NULL
+);
+
+-- 4. VIOLATION_TYPES Table
+CREATE TABLE violation_types (
+  type_id VARCHAR(36) PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  base_fine INT NOT NULL
+);
+
+-- 5. VIOLATIONS Table (Fact Table with 4 FKs)
+CREATE TABLE violations (
+  violation_id VARCHAR(36) PRIMARY KEY,
+  vehicle_id VARCHAR(36) NOT NULL,
+  officer_id VARCHAR(36) NOT NULL,
+  location_id VARCHAR(36) NOT NULL,
+  type_id VARCHAR(36) NOT NULL,
+  violation_time TIMESTAMP NOT NULL,
+  evidence_url TEXT,
+  status ENUM('Pending', 'Contested', 'Closed') DEFAULT 'Pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id) ON DELETE CASCADE,
+  FOREIGN KEY (officer_id) REFERENCES officers(officer_id),
+  FOREIGN KEY (location_id) REFERENCES locations(location_id),
+  FOREIGN KEY (type_id) REFERENCES violation_types(type_id)
+);
+
+-- 6. FINES Table (1:1 with Violations)
+CREATE TABLE fines (
+  fine_id VARCHAR(36) PRIMARY KEY,
+  violation_id VARCHAR(36) UNIQUE NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  due_date TIMESTAMP NOT NULL,
+  paid_at TIMESTAMP NULL,
+  payment_method ENUM('Cash', 'Online', 'UPI'),
+  is_paid BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (violation_id) REFERENCES violations(violation_id) ON DELETE CASCADE
+);
+
+-- 7. ROUTE_SEARCHES Table (Junction / Query log)
+CREATE TABLE route_searches (
+  search_id VARCHAR(36) PRIMARY KEY,
+  user_id VARCHAR(100) NOT NULL,
+  start_point VARCHAR(200) NOT NULL,
+  end_point VARCHAR(200) NOT NULL,
+  searched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+      </div>
+    </div>
+
+    <!-- Query 1 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #1: Basic SELECT with WHERE</span>
+        <span class="badge badge-pk">READ</span>
+      </div>
+      <div class="query-purpose">Purpose: Retrieve all recorded traffic violations for a specific vehicle registration number.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT * 
+FROM violations v
+JOIN vehicles veh ON v.vehicle_id = veh.vehicle_id
+WHERE veh.reg_number = 'KA-01-AB-1234'
+ORDER BY v.violation_time DESC;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+
+// 1. Get vehicle doc ID first
+const vehQuery = query(collection(db, 'vehicles'), where('regNumber', '==', 'KA-01-AB-1234'));
+const vehSnap = await getDocs(vehQuery);
+if (!vehSnap.empty) {
+  const vehicleId = vehSnap.docs[0].id;
+  // 2. Fetch violations with vehicleId
+  const vioQuery = query(
+    collection(db, 'violations'),
+    where('vehicleId', '==', vehicleId)
+  );
+  const violations = (await getDocs(vioQuery)).docs.map(d => d.data());
+}</code></pre>
+        </div>
+      </div>
+      <div class="query-note">Note: Firestore does not support relational joins. We perform a two-step query: first fetching the vehicle ID, then querying violations matching that foreign key.</div>
+    </div>
+
+    <!-- Query 2 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #2: JOIN (2 Tables)</span>
+        <span class="badge badge-pk">READ</span>
+      </div>
+      <div class="query-purpose">Purpose: Get violation records joined with the corresponding vehicle registration and owner details.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT v.violation_id, v.violation_time, veh.reg_number, veh.owner_name
+FROM violations v
+JOIN vehicles veh ON v.vehicle_id = veh.vehicle_id;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Fetch all violations, then fetch vehicle details in parallel
+const vioSnap = await getDocs(collection(db, 'violations'));
+const joinedResults = await Promise.all(
+  vioSnap.docs.map(async (vioDoc) => {
+    const vio = vioDoc.data();
+    const vehDoc = await getDoc(doc(db, 'vehicles', vio.vehicleId));
+    return {
+      violationId: vioDoc.id,
+      violationTime: vio.violationTime,
+      regNumber: vehDoc.exists() ? vehDoc.data().regNumber : 'Unknown',
+      ownerName: vehDoc.exists() ? vehDoc.data().ownerName : 'Unknown'
+    };
+  })
+);</code></pre>
+        </div>
+      </div>
+      <div class="query-note">Note: Relational JOIN operations are resolved client-side by fetching the child documents in parallel using Promise.all().</div>
+    </div>
+
+    <!-- Query 3 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #3: JOIN (3 Tables)</span>
+        <span class="badge badge-pk">READ</span>
+      </div>
+      <div class="query-purpose">Purpose: Fetch violations along with vehicle details, log officer name, and location coordinates.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT v.violation_id, veh.reg_number, o.name AS officer_name, l.name AS location_name
+FROM violations v
+JOIN vehicles veh ON v.vehicle_id = veh.vehicle_id
+JOIN officers o ON v.officer_id = o.officer_id
+JOIN locations l ON v.location_id = l.location_id;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">const vioSnap = await getDocs(collection(db, 'violations'));
+const results = await Promise.all(vioSnap.docs.map(async (vioDoc) => {
+  const vio = vioDoc.data();
+  const [vehD, offD, locD] = await Promise.all([
+    getDoc(doc(db, 'vehicles', vio.vehicleId)),
+    getDoc(doc(db, 'officers', vio.officerId)),
+    getDoc(doc(db, 'locations', vio.locationId))
+  ]);
+  return {
+    violationId: vioDoc.id,
+    regNumber: vehD.exists() ? vehD.data().regNumber : 'N/A',
+    officerName: offD.exists() ? offD.data().name : 'N/A',
+    locationName: locD.exists() ? locD.data().name : 'N/A'
+  };
+}));</code></pre>
+        </div>
+      </div>
+      <div class="query-note">Note: Emulates a multi-table join using Promise.all to fetch references asynchronously.</div>
+    </div>
+
+    <!-- Query 4 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #4: JOIN (5 Tables)</span>
+        <span class="badge badge-pk">READ</span>
+      </div>
+      <div class="query-purpose">Purpose: Full detail join to fetch violation records alongside all linked vehicles, types, locations, and fines.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT v.violation_id, veh.reg_number, t.name AS violation_type, 
+       l.name AS location, f.amount, f.is_paid
+FROM violations v
+JOIN vehicles veh ON v.vehicle_id = veh.vehicle_id
+JOIN violation_types t ON v.type_id = t.type_id
+JOIN locations l ON v.location_id = l.location_id
+JOIN fines f ON v.violation_id = f.violation_id;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">const vioSnap = await getDocs(collection(db, 'violations'));
+const results = await Promise.all(vioSnap.docs.map(async (vioDoc) => {
+  const vio = vioDoc.data();
+  // Fetch fine where violationId matches
+  const fineQuery = query(collection(db, 'fines'), where('violationId', '==', vioDoc.id));
+  const [vehD, typD, locD, fineSnap] = await Promise.all([
+    getDoc(doc(db, 'vehicles', vio.vehicleId)),
+    getDoc(doc(db, 'violation_types', vio.typeId)),
+    getDoc(doc(db, 'locations', vio.locationId)),
+    getDocs(fineQuery)
+  ]);
+  const fine = !fineSnap.empty ? fineSnap.docs[0].data() : null;
+  return {
+    violationId: vioDoc.id,
+    regNumber: vehD.exists() ? vehD.data().regNumber : 'N/A',
+    violationType: typD.exists() ? typD.data().name : 'N/A',
+    location: locD.exists() ? locD.data().name : 'N/A',
+    amount: fine ? fine.amount : 0,
+    isPaid: fine ? fine.isPaid : false
+  };
+}));</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 5 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #5: Aggregate + GROUP BY</span>
+        <span class="badge badge-pk">AGGREGATE</span>
+      </div>
+      <div class="query-purpose">Purpose: Count the total number of violations logged in each geographic zone.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT l.zone, COUNT(*) AS total_violations
+FROM violations v
+JOIN locations l ON v.location_id = l.location_id
+GROUP BY l.zone;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Grouping is performed client-side by building a map
+const vSnap = await getDocs(collection(db, 'violations'));
+const locSnap = await getDocs(collection(db, 'locations'));
+
+// Map locationId to its zone
+const locZones = {};
+locSnap.forEach(d => locZones[d.id] = d.data().zone);
+
+const zoneStats = {};
+vSnap.forEach(d => {
+  const zone = locZones[d.data().locationId] || 'Unknown';
+  zoneStats[zone] = (zoneStats[zone] || 0) + 1;
+});
+console.log(zoneStats); // { 'South': 14, 'Central': 8 }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 6 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #6: HAVING Clause</span>
+        <span class="badge badge-pk">AGGREGATE</span>
+      </div>
+      <div class="query-purpose">Purpose: Find high-frequency zones that have registered more than 10 violations.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT l.zone, COUNT(*) AS total_violations
+FROM violations v
+JOIN locations l ON v.location_id = l.location_id
+GROUP BY l.zone
+HAVING COUNT(*) > 10;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Perform the map grouping, then filter keys
+const filteredZones = Object.keys(zoneStats)
+  .filter(zone => zoneStats[zone] > 10)
+  .reduce((obj, key) => {
+    obj[key] = zoneStats[key];
+    return obj;
+  }, {});</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 7 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #7: Subquery</span>
+        <span class="badge badge-pk">SUBQUERY</span>
+      </div>
+      <div class="query-purpose">Purpose: Fetch vehicle registration numbers whose total outstanding fines exceed ₹5,000.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT reg_number, owner_name 
+FROM vehicles
+WHERE vehicle_id IN (
+  SELECT v.vehicle_id
+  FROM violations v
+  JOIN fines f ON v.violation_id = f.violation_id
+  WHERE f.is_paid = FALSE
+  GROUP BY v.vehicle_id
+  HAVING SUM(f.amount) > 5000
+);</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">const finesSnap = await getDocs(query(collection(db, 'fines'), where('isPaid', '==', false)));
+const vehicleFineSum = {};
+
+for (const fineDoc of finesSnap.docs) {
+  const fine = fineDoc.data();
+  // Fetch violation to get vehicleId
+  const vioDoc = await getDoc(doc(db, 'violations', fine.violationId));
+  if (vioDoc.exists()) {
+    const vId = vioDoc.data().vehicleId;
+    vehicleFineSum[vId] = (vehicleFineSum[vId] || 0) + fine.amount;
+  }
+}
+
+const largeOffenders = Object.keys(vehicleFineSum).filter(id => vehicleFineSum[id] > 5000);
+// Query details of these vehicles in parallel
+const offendersDetails = await Promise.all(largeOffenders.map(id => getDoc(doc(db, 'vehicles', id))));</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 8 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #8: Correlated Subquery</span>
+        <span class="badge badge-pk">SUBQUERY</span>
+      </div>
+      <div class="query-purpose">Purpose: Select violations where the generated fine is higher than the average fine of its violation category.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT v.violation_id, f.amount
+FROM violations v
+JOIN fines f ON v.violation_id = f.violation_id
+WHERE f.amount > (
+  SELECT AVG(f2.amount)
+  FROM violations v2
+  JOIN fines f2 ON v2.violation_id = f2.violation_id
+  WHERE v2.type_id = v.type_id
+);</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Client-side double map to aggregate averages per type
+const allFines = (await getDocs(collection(db, 'fines'))).docs.map(d => d.data());
+const allVios = (await getDocs(collection(db, 'violations'))).docs.map(d => ({id: d.id, ...d.data()}));
+
+// Calculate avg by type
+const typeFines = {};
+allVios.forEach(v => {
+  const fine = allFines.find(f => f.violationId === v.id);
+  if (fine) {
+    if (!typeFines[v.typeId]) typeFines[v.typeId] = [];
+    typeFines[v.typeId].push(fine.amount);
+  }
+});
+
+const averages = {};
+Object.keys(typeFines).forEach(tid => {
+  const sum = typeFines[tid].reduce((a,b) => a+b, 0);
+  averages[tid] = sum / typeFines[tid].length;
+});
+
+const results = allVios.filter(v => {
+  const fine = allFines.find(f => f.violationId === v.id);
+  return fine && fine.amount > averages[v.typeId];
+});</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 9 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #9: ORDER BY + LIMIT</span>
+        <span class="badge badge-pk">READ</span>
+      </div>
+      <div class="query-purpose">Purpose: Fetch the top 10 vehicles with the highest accumulated pending fines.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT veh.reg_number, SUM(f.amount) AS total_pending
+FROM fines f
+JOIN violations v ON f.violation_id = v.violation_id
+JOIN vehicles veh ON v.vehicle_id = veh.vehicle_id
+WHERE f.is_paid = FALSE
+GROUP BY veh.vehicle_id
+ORDER BY total_pending DESC
+LIMIT 10;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Aggregate, sort and slice the array to top 10
+const sortedVehicles = Object.entries(vehicleFineSum)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 10);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 10 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #10: Date Function</span>
+        <span class="badge badge-pk">READ</span>
+      </div>
+      <div class="query-purpose">Purpose: Fetch all violations logged within the last 90 days.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT * 
+FROM violations
+WHERE violation_time >= DATE_SUB(NOW(), INTERVAL 90 DAY);</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">const ninetyDaysAgo = new Date();
+ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+const q = query(
+  collection(db, 'violations'),
+  where('violationTime', '>=', ninetyDaysAgo)
+);
+const querySnapshot = await getDocs(q);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 11 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #11: Repeat Offender Detection (Critical)</span>
+        <span class="badge badge-pk">AGGREGATE</span>
+      </div>
+      <div class="query-purpose">Purpose: List vehicles that have committed more than 3 violations in the past 90 days.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT vehicle_id, COUNT(*) AS violation_count
+FROM violations
+WHERE violation_time >= DATE_SUB(NOW(), INTERVAL 90 DAY)
+GROUP BY vehicle_id
+HAVING COUNT(*) > 3;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">const cutoff = new Date();
+cutoff.setDate(cutoff.getDate() - 90);
+
+const q = query(collection(db, 'violations'), where('violationTime', '>=', cutoff));
+const snap = await getDocs(q);
+
+const counts = {};
+snap.forEach(d => {
+  const vId = d.data().vehicleId;
+  counts[vId] = (counts[vId] || 0) + 1;
+});
+
+const repeatOffenders = Object.keys(counts).filter(vId => counts[vId] > 3);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 12 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #12: Unpaid Fines with Overdue Calculation</span>
+        <span class="badge badge-pk">READ</span>
+      </div>
+      <div class="query-purpose">Purpose: Get unpaid fines with calculated days overdue.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT fine_id, amount, due_date,
+       DATEDIFF(NOW(), due_date) AS days_overdue
+FROM fines
+WHERE is_paid = FALSE AND due_date < NOW();</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">const now = new Date();
+const overdueQuery = query(
+  collection(db, 'fines'),
+  where('isPaid', '==', false),
+  where('dueDate', '<', now)
+);
+const snap = await getDocs(overdueQuery);
+const list = snap.docs.map(doc => {
+  const data = doc.data();
+  const diffTime = Math.abs(now - data.dueDate.toDate());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return { id: doc.id, ...data, daysOverdue: diffDays };
+});</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 13 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #13: Window Function (RANK)</span>
+        <span class="badge badge-pk">WINDOW</span>
+      </div>
+      <div class="query-purpose">Purpose: Rank officers based on the number of violations they logged in the current month.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">SELECT officer_id, COUNT(*) AS violations_logged,
+       RANK() OVER (ORDER BY COUNT(*) DESC) as officer_rank
+FROM violations
+WHERE MONTH(violation_time) = MONTH(CURRENT_DATE())
+GROUP BY officer_id;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Client-side aggregation and sorting
+const snap = await getDocs(collection(db, 'violations'));
+const currentMonth = new Date().getMonth();
+
+const counts = {};
+snap.forEach(d => {
+  const date = d.data().violationTime.toDate();
+  if (date.getMonth() === currentMonth) {
+    const oid = d.data().officerId;
+    counts[oid] = (counts[oid] || 0) + 1;
+  }
+});
+
+const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+const ranks = sorted.map((entry, index) => ({
+  officerId: entry[0],
+  count: entry[1],
+  rank: index + 1
+}));</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 14 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #14: VIEW Definition</span>
+        <span class="badge badge-pk">VIEW</span>
+      </div>
+      <div class="query-purpose">Purpose: Define a view to compile zones, violation volume, and average risk rating.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">CREATE VIEW hotspot_zones AS
+SELECT l.zone, COUNT(v.violation_id) AS total_violations,
+       CASE 
+         WHEN COUNT(v.violation_id) > 50 THEN 'High Risk'
+         WHEN COUNT(v.violation_id) > 20 THEN 'Moderate'
+         ELSE 'Safe'
+       END AS risk_level
+FROM locations l
+LEFT JOIN violations v ON l.location_id = v.location_id
+GROUP BY l.zone;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Emulated in client-side code using a dedicated hook
+// read dynamically from calculated snapshot averages
+export const useHotspotZones = () => {
+  // Returns real-time mapped statistics computed on the client
+  // for safety maps and dashboards
+};</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 15 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #15: STORED PROCEDURE</span>
+        <span class="badge badge-pk">PROCEDURE</span>
+      </div>
+      <div class="query-purpose">Purpose: Stored Procedure to query unpaid fines for a vehicle reg number.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">DELIMITER //
+CREATE PROCEDURE GetUnpaidFines(IN regNum VARCHAR(15))
+BEGIN
+  SELECT f.fine_id, f.amount, f.due_date, vt.name AS violation
+  FROM fines f
+  JOIN violations v ON f.violation_id = v.violation_id
+  JOIN vehicles veh ON v.vehicle_id = veh.vehicle_id
+  JOIN violation_types vt ON v.type_id = vt.type_id
+  WHERE veh.reg_number = regNum AND f.is_paid = FALSE;
+END //
+DELIMITER ;
+
+-- CALL GetUnpaidFines('KA-01-AB-1234');</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Call Cloud Function (HTTPS callable)
+import { getFunctions, httpsCallable } from 'firebase/functions';
+
+const functions = getFunctions();
+const getUnpaidFines = httpsCallable(functions, 'getUnpaidFines');
+const result = await getUnpaidFines({ regNumber: 'KA-01-AB-1234' });
+const unpaidFinesList = result.data;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 16 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #16: TRIGGER Definition</span>
+        <span class="badge badge-pk">TRIGGER</span>
+      </div>
+      <div class="query-purpose">Purpose: Automatically create fine invoice and calculate 1.5x escalation if repeat offender (>3 violations, 90 days).</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">CREATE TRIGGER after_violation_insert
+AFTER INSERT ON violations FOR EACH ROW
+BEGIN
+  DECLARE baseVal INT;
+  DECLARE isRepeat BOOLEAN;
+  
+  SELECT base_fine INTO baseVal 
+  FROM violation_types WHERE type_id = NEW.type_id;
+
+  SET isRepeat = (
+    SELECT COUNT(*) > 3 
+    FROM violations 
+    WHERE vehicle_id = NEW.vehicle_id 
+      AND violation_time >= DATE_SUB(NEW.violation_time, INTERVAL 90 DAY)
+  );
+
+  INSERT INTO fines (fine_id, violation_id, amount, due_date, is_paid)
+  VALUES (
+    UUID(), 
+    NEW.violation_id, 
+    IF(isRepeat, baseVal * 1.5, baseVal), 
+    DATE_ADD(NEW.violation_time, INTERVAL 30 DAY), 
+    FALSE
+  );
+END;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Firestore Cloud Function Trigger in functions/index.js
+exports.onViolationCreated = functions.firestore
+  .document('violations/{violationId}')
+  .onCreate(async (snap, context) => {
+    const data = snap.data();
+    const typeRef = await db.collection('violation_types').doc(data.typeId).get();
+    const baseFine = typeRef.data().baseFine;
+
+    // Check repeat offences
+    const ninetyDaysAgo = new Date(data.violationTime.toDate() - 90 * 86400000);
+    const prevCountSnap = await db.collection('violations')
+      .where('vehicleId', '==', data.vehicleId)
+      .where('violationTime', '>=', ninetyDaysAgo)
+      .get();
+
+    const isRepeat = prevCountSnap.size > 3;
+    const finalAmount = isRepeat ? baseFine * 1.5 : baseFine;
+
+    return db.collection('fines').add({
+      violationId: context.params.violationId,
+      amount: finalAmount,
+      dueDate: new Date(Date.now() + 30 * 86400000),
+      isPaid: false,
+      paidAt: null,
+      paymentMethod: null
+    });
+  });</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 17 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #17: INDEX Creation</span>
+        <span class="badge badge-pk">INDEX</span>
+      </div>
+      <div class="query-purpose">Purpose: Create indexes for optimizing lookup performance.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">CREATE INDEX idx_veh_reg ON vehicles(reg_number);
+CREATE INDEX idx_vio_time ON violations(violation_time);</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Defined inside firestore.indexes.json
+{
+  "indexes": [
+    {
+      "collectionGroup": "violations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vehicleId", "order": "ASCENDING" },
+        { "fieldPath": "violationTime", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 18 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #18: UPDATE with JOIN</span>
+        <span class="badge badge-pk">UPDATE</span>
+      </div>
+      <div class="query-purpose">Purpose: Mark all pending fines for a specific vehicle registration number as paid.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">UPDATE fines f
+JOIN violations v ON f.violation_id = v.violation_id
+JOIN vehicles veh ON v.vehicle_id = veh.vehicle_id
+SET f.is_paid = TRUE, f.paid_at = NOW(), f.payment_method = 'Online'
+WHERE veh.reg_number = 'KA-01-AB-1234' AND f.is_paid = FALSE;</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Update multi docs inside batch
+const batch = writeBatch(db);
+
+const vehQuery = query(collection(db, 'vehicles'), where('regNumber', '==', 'KA-01-AB-1234'));
+const vehId = (await getDocs(vehQuery)).docs[0].id;
+
+const vQuery = query(collection(db, 'violations'), where('vehicleId', '==', vehId));
+const vios = await getDocs(vQuery);
+
+for (const vDoc of vios.docs) {
+  const fineQuery = query(collection(db, 'fines'), 
+    where('violationId', '==', vDoc.id), 
+    where('isPaid', '==', false)
+  );
+  const fines = await getDocs(fineQuery);
+  fines.forEach(fDoc => {
+    batch.update(fDoc.ref, {
+      isPaid: true,
+      paidAt: serverTimestamp(),
+      paymentMethod: 'Online'
+    });
+  });
+}
+await batch.commit();</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 19 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-title">Query #19: DELETE with Subquery</span>
+        <span class="badge badge-pk">DELETE</span>
+      </div>
+      <div class="query-purpose">Purpose: Delete violation records older than 2 years that do not have outstanding unpaid fines.</div>
+      <div class="query-grid">
+        <div class="code-col">
+          <span class="code-title" style="color: #3182CE;">MySQL SQL</span>
+          <pre><code class="language-sql">DELETE FROM violations
+WHERE violation_time < DATE_SUB(NOW(), INTERVAL 2 YEAR)
+  AND violation_id NOT IN (
+    SELECT violation_id 
+    FROM fines 
+    WHERE is_paid = FALSE
+  );</code></pre>
+        </div>
+        <div class="code-col">
+          <span class="code-title" style="color: #38A169;">Firebase Firestore JS</span>
+          <pre><code class="language-javascript">// Fetch and batch delete matching documents
+const twoYearsAgo = new Date();
+twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+
+const vQuery = query(collection(db, 'violations'), where('violationTime', '<', twoYearsAgo));
+const vios = await getDocs(vQuery);
+
+const batch = writeBatch(db);
+for (const vDoc of vios.docs) {
+  const fQuery = query(collection(db, 'fines'), 
+    where('violationId', '==', vDoc.id), 
+    where('isPaid', '==', false)
+  );
+  const unpaidFines = await getDocs(fQuery);
+  if (unpaidFines.empty) {
+    batch.delete(vDoc.ref);
+  }
+}
+await batch.commit();</code></pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    hljs.highlightAll();
+
+    function toggleCollapsible(element) {
+      const content = element.nextElementSibling;
+      const arrow = element.querySelector('.arrow');
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.innerHTML = '&#9652;';
+      } else {
+        content.style.display = 'none';
+        arrow.innerHTML = '&#9662;';
+      }
+    }
+  </script>
+</body>
+</html>

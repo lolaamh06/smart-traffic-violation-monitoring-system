@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STVMS — Relational Database Schema (3NF)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #0B1120;
+      --color-surface: #141E30;
+      --color-surface-2: #1C2A40;
+      --color-border: #1E3A5F;
+      --color-primary: #E53E3E;
+      --color-accent: #3182CE;
+      --color-warn: #D69E2E;
+      --color-safe: #38A169;
+      --color-text-primary: #E2E8F0;
+      --color-text-secondary: #718096;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-area h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFF 0%, var(--color-text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-area p {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .badge-vtu {
+      background: rgba(49, 130, 206, 0.1);
+      border: 1px solid var(--color-accent);
+      color: var(--color-accent);
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 2rem;
+      overflow: auto;
+      background: #0B1120;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 850px;
+    }
+
+    svg {
+      border: 1px solid var(--color-border);
+      background: #070c16;
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+      user-select: none;
+    }
+
+    /* Interactive highlights */
+    .table-box {
+      cursor: pointer;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .rel-line {
+      fill: none;
+      stroke: var(--color-accent);
+      stroke-width: 2;
+      transition: stroke 0.3s, stroke-width 0.3s, filter 0.3s;
+    }
+    .rel-line-weak {
+      stroke: var(--color-primary);
+      stroke-dasharray: 4,4;
+    }
+
+    .crow-foot {
+      fill: none;
+      stroke: var(--color-primary);
+      stroke-width: 2;
+    }
+
+    .dimmed {
+      opacity: 0.15;
+    }
+    .highlighted {
+      stroke-width: 3.5 !important;
+      stroke: var(--color-accent) !important;
+      filter: drop-shadow(0 0 6px var(--color-accent));
+    }
+    .highlighted-weak {
+      stroke-width: 3.5 !important;
+      stroke: var(--color-primary) !important;
+      filter: drop-shadow(0 0 6px var(--color-primary));
+    }
+
+    legend {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      position: absolute;
+      bottom: 2rem;
+      left: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 3px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .badge-pk { background: rgba(56, 161, 105, 0.2); color: var(--color-safe); border: 1px solid var(--color-safe); }
+    .badge-fk { background: rgba(49, 130, 206, 0.2); color: var(--color-accent); border: 1px solid var(--color-accent); }
+    .badge-uq { background: rgba(214, 158, 46, 0.2); color: var(--color-warn); border: 1px solid var(--color-warn); }
+    .badge-nn { background: rgba(113, 128, 150, 0.2); color: var(--color-text-secondary); border: 1px solid var(--color-text-secondary); }
+
+    footer {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: 1rem 2rem;
+      font-size: 0.825rem;
+      color: var(--color-text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      header, legend, footer {
+        display: none !important;
+      }
+      .canvas-container {
+        padding: 0;
+        background: transparent;
+      }
+      svg {
+        border: none;
+        box-shadow: none;
+        background: white;
+      }
+      /* Invert styles for readable black and white prints */
+      text {
+        fill: black !important;
+      }
+      rect {
+        stroke: black !important;
+        fill: none !important;
+      }
+      path {
+        stroke: black !important;
+      }
+      .badge {
+        color: black !important;
+        border-color: black !important;
+        background: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-area">
+      <h1>STVMS — Database Schema (3NF Relational Model)</h1>
+      <p>BMSIT&amp;M Mini Project — 4th Semester DBMS (CO4 Schema Representation)</p>
+    </div>
+    <div class="badge-vtu">CO4 — Schema Representation</div>
+  </header>
+
+  <div class="canvas-container">
+    <svg id="schema-svg" viewBox="0 0 1600 850" width="1600" height="850">
+      
+      <!-- Grid Overlay -->
+      <defs>
+        <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+          <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(30, 58, 95, 0.1)" stroke-width="1"/>
+        </pattern>
+        
+        <!-- Crow's foot connector markers -->
+        <marker id="many-marker" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+          <path d="M 0,1 L 10,5 L 0,9" fill="none" stroke="#3182CE" stroke-width="1.5"/>
+          <line x1="6" y1="0" x2="6" y2="10" stroke="#3182CE" stroke-width="1.5" />
+        </marker>
+        <marker id="one-marker" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+          <line x1="4" y1="0" x2="4" y2="10" stroke="#3182CE" stroke-width="1.5" />
+          <line x1="8" y1="0" x2="8" y2="10" stroke="#3182CE" stroke-width="1.5" />
+        </marker>
+
+        <!-- Strong one-to-one markers for Fines -->
+        <marker id="one-marker-red" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+          <line x1="4" y1="0" x2="4" y2="10" stroke="#E53E3E" stroke-width="1.5" />
+          <line x1="8" y1="0" x2="8" y2="10" stroke="#E53E3E" stroke-width="1.5" />
+        </marker>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+
+      <!-- ==================== RELATIONSHIP LINES ==================== -->
+      <!-- VEHICLES (1) to VIOLATIONS (N) -->
+      <!-- From vehicles.vehicle_id (330, 100) -> violations.vehicle_id (630, 240) -->
+      <path class="rel-line map-vehicles map-violations" d="M 330, 100 L 480, 100 L 480, 240 L 630, 240" 
+            marker-start="url(#one-marker)" marker-end="url(#many-marker)" id="line-veh-vio" />
+
+      <!-- OFFICERS (1) to VIOLATIONS (N) -->
+      <!-- From officers.officer_id (330, 430) -> violations.officer_id (630, 270) -->
+      <path class="rel-line map-officers map-violations" d="M 330, 430 L 480, 430 L 480, 270 L 630, 270" 
+            marker-start="url(#one-marker)" marker-end="url(#many-marker)" id="line-off-vio" />
+
+      <!-- LOCATIONS (1) to VIOLATIONS (N) -->
+      <!-- From locations.location_id (330, 680) -> violations.location_id (630, 300) -->
+      <path class="rel-line map-locations map-violations" d="M 330, 680 L 510, 680 L 510, 300 L 630, 300" 
+            marker-start="url(#one-marker)" marker-end="url(#many-marker)" id="line-loc-vio" />
+
+      <!-- VIOLATION_TYPES (1) to VIOLATIONS (N) -->
+      <!-- From violation_types.type_id (1270, 490) -> violations.type_id (880, 330) -->
+      <path class="rel-line map-types map-violations" d="M 1270, 490 L 1050, 490 L 1050, 330 L 880, 330" 
+            marker-start="url(#one-marker)" marker-end="url(#many-marker)" id="line-types-vio" />
+
+      <!-- VIOLATIONS (1) to FINES (1) -->
+      <!-- From violations.violation_id (880, 210) -> fines.violation_id (1270, 180) -->
+      <path class="rel-line rel-line-weak map-violations map-fines" d="M 880, 210 L 1080, 210 L 1080, 180 L 1270, 180" 
+            marker-start="url(#one-marker-red)" marker-end="url(#one-marker-red)" id="line-vio-fines" />
+
+
+      <!-- ==================== TABLE BOXES ==================== -->
+      
+      <!-- Table 1: VEHICLES -->
+      <g class="table-box map-vehicles" transform="translate(50, 50)" id="tbl-vehicles">
+        <rect stroke="var(--color-border)" stroke-width="1.5" fill="var(--color-surface-2)" width="280" height="230" rx="6" />
+        <rect fill="#1E3A5F" width="280" height="35" rx="6" />
+        <text font-family="Space Grotesk" font-weight="700" font-size="14" fill="white" x="15" y="22">vehicles</text>
+        
+        <g transform="translate(15, 60)">
+          <!-- Row 1 -->
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="10">vehicle_id</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="10">VARCHAR(36)</text>
+          <rect fill="rgba(56, 161, 105, 0.2)" stroke="var(--color-safe)" stroke-width="1" x="200" y="-1" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-safe)" x="206" y="9">PK</text>
+
+          <!-- Row 2 -->
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="35">reg_number</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="35">VARCHAR(15)</text>
+          <rect fill="rgba(214, 158, 46, 0.2)" stroke="var(--color-warn)" stroke-width="1" x="200" y="24" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-warn)" x="206" y="34">UQ</text>
+
+          <!-- Row 3 -->
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="60">owner_name</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="60">VARCHAR(100)</text>
+          <rect fill="rgba(113, 128, 150, 0.2)" stroke="var(--color-text-secondary)" stroke-width="1" x="200" y="49" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-text-secondary)" x="206" y="59">NN</text>
+
+          <!-- Row 4 -->
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="85">owner_phone</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="85">VARCHAR(15)</text>
+          <rect fill="rgba(113, 128, 150, 0.2)" stroke="var(--color-text-secondary)" stroke-width="1" x="200" y="74" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-text-secondary)" x="206" y="84">NN</text>
+
+          <!-- Row 5 -->
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="110">owner_email</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="110">VARCHAR(100)</text>
+
+          <!-- Row 6 -->
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="135">vehicle_type</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="135">ENUM(...)</text>
+
+          <!-- Row 7 -->
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="160">created_at</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="160">TIMESTAMP</text>
+        </g>
+      </g>
+
+      <!-- Table 2: OFFICERS -->
+      <g class="table-box map-officers" transform="translate(50, 310)" id="tbl-officers">
+        <rect stroke="var(--color-border)" stroke-width="1.5" fill="var(--color-surface-2)" width="280" height="205" rx="6" />
+        <rect fill="#1E3A5F" width="280" height="35" rx="6" />
+        <text font-family="Space Grotesk" font-weight="700" font-size="14" fill="white" x="15" y="22">officers</text>
+        
+        <g transform="translate(15, 60)">
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="10">officer_id</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="10">VARCHAR(36)</text>
+          <rect fill="rgba(56, 161, 105, 0.2)" stroke="var(--color-safe)" stroke-width="1" x="200" y="-1" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-safe)" x="206" y="9">PK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="35">badge_number</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="35">VARCHAR(15)</text>
+          <rect fill="rgba(214, 158, 46, 0.2)" stroke="var(--color-warn)" stroke-width="1" x="200" y="24" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-warn)" x="206" y="34">UQ</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="60">name</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="60">VARCHAR(100)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="85">zone</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="85">VARCHAR(50)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="110">username</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="110">VARCHAR(50)</text>
+          <rect fill="rgba(214, 158, 46, 0.2)" stroke="var(--color-warn)" stroke-width="1" x="200" y="99" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-warn)" x="206" y="109">UQ</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="135">password_hash</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="135">VARCHAR(255)</text>
+        </g>
+      </g>
+
+      <!-- Table 3: LOCATIONS -->
+      <g class="table-box map-locations" transform="translate(50, 540)" id="tbl-locations">
+        <rect stroke="var(--color-border)" stroke-width="1.5" fill="var(--color-surface-2)" width="280" height="155" rx="6" />
+        <rect fill="#1E3A5F" width="280" height="35" rx="6" />
+        <text font-family="Space Grotesk" font-weight="700" font-size="14" fill="white" x="15" y="22">locations</text>
+        
+        <g transform="translate(15, 60)">
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="10">location_id</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="10">VARCHAR(36)</text>
+          <rect fill="rgba(56, 161, 105, 0.2)" stroke="var(--color-safe)" stroke-width="1" x="200" y="-1" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-safe)" x="206" y="9">PK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="35">name</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="35">VARCHAR(100)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="60">latitude</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="60">DECIMAL(9,6)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="85">longitude</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="85">DECIMAL(9,6)</text>
+        </g>
+      </g>
+
+      <!-- Table 4: VIOLATIONS (FACT) -->
+      <g class="table-box map-violations" transform="translate(630, 150)" id="tbl-violations">
+        <rect stroke="var(--color-border)" stroke-width="2" fill="var(--color-surface-2)" width="250" height="280" rx="6" />
+        <rect fill="#851C1C" width="250" height="35" rx="6" />
+        <text font-family="Space Grotesk" font-weight="700" font-size="14" fill="white" x="15" y="22">violations</text>
+        
+        <g transform="translate(15, 60)">
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="10">violation_id</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="10">VARCHAR(36)</text>
+          <rect fill="rgba(56, 161, 105, 0.2)" stroke="var(--color-safe)" stroke-width="1" x="175" y="-1" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-safe)" x="181" y="9">PK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="35">vehicle_id</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="35">VARCHAR(36)</text>
+          <rect fill="rgba(49, 130, 206, 0.2)" stroke="var(--color-accent)" stroke-width="1" x="175" y="24" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-accent)" x="181" y="34">FK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="60">officer_id</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="60">VARCHAR(36)</text>
+          <rect fill="rgba(49, 130, 206, 0.2)" stroke="var(--color-accent)" stroke-width="1" x="175" y="49" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-accent)" x="181" y="59">FK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="85">location_id</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="85">VARCHAR(36)</text>
+          <rect fill="rgba(49, 130, 206, 0.2)" stroke="var(--color-accent)" stroke-width="1" x="175" y="74" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-accent)" x="181" y="84">FK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="110">type_id</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="110">VARCHAR(36)</text>
+          <rect fill="rgba(49, 130, 206, 0.2)" stroke="var(--color-accent)" stroke-width="1" x="175" y="99" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-accent)" x="181" y="109">FK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="135">violation_time</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="135">TIMESTAMP</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="160">evidence_url</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="160">TEXT</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="185">status</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="185">ENUM(...)</text>
+        </g>
+      </g>
+
+      <!-- Table 5: FINES -->
+      <g class="table-box map-fines" transform="translate(1270, 50)" id="tbl-fines">
+        <rect stroke="var(--color-border)" stroke-width="1.5" fill="var(--color-surface-2)" width="280" height="205" rx="6" />
+        <rect fill="#1E3A5F" width="280" height="35" rx="6" />
+        <text font-family="Space Grotesk" font-weight="700" font-size="14" fill="white" x="15" y="22">fines</text>
+        
+        <g transform="translate(15, 60)">
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="10">fine_id</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="10">VARCHAR(36)</text>
+          <rect fill="rgba(56, 161, 105, 0.2)" stroke="var(--color-safe)" stroke-width="1" x="200" y="-1" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-safe)" x="206" y="9">PK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="35">violation_id</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="35">VARCHAR(36)</text>
+          <rect fill="rgba(49, 130, 206, 0.2)" stroke="var(--color-accent)" stroke-width="1" x="200" y="24" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-accent)" x="206" y="34">FK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="60">amount</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="60">DECIMAL(10,2)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="85">due_date</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="85">TIMESTAMP</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="110">paid_at</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="110">TIMESTAMP</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="135">is_paid</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="135">BOOLEAN</text>
+        </g>
+      </g>
+
+      <!-- Table 6: VIOLATION_TYPES -->
+      <g class="table-box map-types" transform="translate(1270, 390)" id="tbl-violation-types">
+        <rect stroke="var(--color-border)" stroke-width="1.5" fill="var(--color-surface-2)" width="280" height="155" rx="6" />
+        <rect fill="#1E3A5F" width="280" height="35" rx="6" />
+        <text font-family="Space Grotesk" font-weight="700" font-size="14" fill="white" x="15" y="22">violation_types</text>
+        
+        <g transform="translate(15, 60)">
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="10">type_id</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="10">VARCHAR(36)</text>
+          <rect fill="rgba(56, 161, 105, 0.2)" stroke="var(--color-safe)" stroke-width="1" x="200" y="-1" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-safe)" x="206" y="9">PK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="35">name</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="35">VARCHAR(100)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="60">base_fine</text>
+          <text font-family="DM Sans" font-size="10" fill="var(--color-text-secondary)" x="110" y="60">INT</text>
+        </g>
+      </g>
+
+      <!-- Table 7: ROUTE_SEARCHES -->
+      <g class="table-box map-searches" transform="translate(630, 540)" id="tbl-route-searches">
+        <rect stroke="var(--color-border)" stroke-width="1.5" fill="var(--color-surface-2)" width="250" height="180" rx="6" />
+        <rect fill="#1E3A5F" width="250" height="35" rx="6" />
+        <text font-family="Space Grotesk" font-weight="700" font-size="14" fill="white" x="15" y="22">route_searches</text>
+        
+        <g transform="translate(15, 60)">
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="10">search_id</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="10">VARCHAR(36)</text>
+          <rect fill="rgba(56, 161, 105, 0.2)" stroke="var(--color-safe)" stroke-width="1" x="175" y="-1" width="30" height="15" rx="3" />
+          <text font-family="Space Grotesk" font-size="8" font-weight="700" fill="var(--color-safe)" x="181" y="9">PK</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="35">user_id</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="35">VARCHAR(100)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="60">start_point</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="60">VARCHAR(200)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="85">end_point</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="85">VARCHAR(200)</text>
+
+          <text font-family="JetBrains Mono" font-size="11" fill="var(--color-text-primary)" x="0" y="110">searched_at</text>
+          <text font-family="DM Sans" font-size="9" fill="var(--color-text-secondary)" x="95" y="110">TIMESTAMP</text>
+        </g>
+      </g>
+
+    </svg>
+
+    <legend>
+      <div style="font-weight: 700; margin-bottom: 0.25rem; font-family: 'Space Grotesk', sans-serif;">Schema Key</div>
+      <div class="legend-item"><span class="badge badge-pk">PK</span> <span>Primary Key</span></div>
+      <div class="legend-item"><span class="badge badge-fk">FK</span> <span>Foreign Key</span></div>
+      <div class="legend-item"><span class="badge badge-uq">UQ</span> <span>Unique Attribute</span></div>
+      <div class="legend-item"><span class="badge badge-nn">NN</span> <span>Not Null Column</span></div>
+      <div class="legend-item">
+        <div style="width: 25px; border-bottom: 2px solid var(--color-accent); margin-right: 5px;"></div>
+        <span>1:N Relationship</span>
+      </div>
+      <div class="legend-item">
+        <div style="width: 25px; border-bottom: 2px dashed var(--color-primary); margin-right: 5px;"></div>
+        <span>1:1 Relationship (Weak/Invoice)</span>
+      </div>
+    </legend>
+  </div>
+
+  <footer>
+    <div>SDG 9 — Industry, Innovation and Infrastructure</div>
+    <div>BMSIT &amp; M DBMS Mini Project — Team 2</div>
+  </footer>
+
+  <script>
+    const tables = document.querySelectorAll('.table-box');
+    const lines = document.querySelectorAll('.rel-line');
+
+    tables.forEach(table => {
+      table.addEventListener('mouseenter', () => {
+        const classes = Array.from(table.classList);
+        const maps = classes.filter(c => c.startsWith('map-'));
+        
+        if (maps.length === 0) return;
+
+        // Dim all tables and lines
+        tables.forEach(t => t.classList.add('dimmed'));
+        lines.forEach(l => l.classList.add('dimmed'));
+
+        // Highlight this table and connected paths
+        maps.forEach(mapClass => {
+          document.querySelectorAll('.' + mapClass).forEach(el => {
+            el.classList.remove('dimmed');
+            if (el.tagName === 'path') {
+              if (el.classList.contains('rel-line-weak')) {
+                el.classList.add('highlighted-weak');
+              } else {
+                el.classList.add('highlighted');
+              }
+            }
+          });
+        });
+      });
+
+      table.addEventListener('mouseleave', () => {
+        tables.forEach(t => t.classList.remove('dimmed'));
+        lines.forEach(l => {
+          l.classList.remove('dimmed', 'highlighted', 'highlighted-weak');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

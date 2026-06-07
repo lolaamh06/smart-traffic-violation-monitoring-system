@@ -1,0 +1,34 @@
+# Dependencies
+stvms/node_modules/
+
+# Production builds
+stvms/dist/
+stvms/dist-ssr/
+
+# Local env files (MUST be ignored to protect API credentials)
+stvms/.env
+stvms/.env*.local
+
+# Logs
+stvms/*.log
+stvms/npm-debug.log*
+stvms/yarn-debug.log*
+stvms/yarn-error.log*
+stvms/pnpm-debug.log*
+stvms/lerna-debug.log*
+
+# Editor and System files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+desktop.ini
+Thumbs.db
+
+# Temp/Script files
+__pycache__/
+extract_docx.py

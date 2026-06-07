@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Check if the request is authenticated
+    function isOfficer() {
+      return request.auth != null;
+    }
+
+    // Allow read/write access during setup/evaluation
+    match /{document=**} {
+      allow read, write: if true;
+    }
+
+    // Public can read violations & related collections for citizen features
+    match /violations/{docId} {
+      allow read: if true;
+    }
+    match /violation_types/{docId} {
+      allow read: if true;
+    }
+    match /locations/{docId} {
+      allow read: if true;
+    }
+    match /vehicles/{docId} {
+      allow read: if true;
+    }
+    match /fines/{docId} {
+      allow read: if true;
+    }
+    match /route_searches/{docId} {
+      allow create, read: if true;
+    }
+  }
+}
